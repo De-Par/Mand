@@ -1,0 +1,46 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Светлая тема -->
+    <style name="AppThemeLight" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#1565C0</item> <!-- тулбары и задний фон  -->
+        <item name="colorPrimaryDark">#165BAA</item>
+        <item name="colorAccent">@color/colorAccent</item>  <!-- тема фона нижнего подчеркивания  -->
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:scrollbarThumbVertical">@android:color/darker_gray</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item> <!-- анимация окон  -->
+    </style>
+
+    <!--  Темная тема  -->
+    <style name="AppThemeNight" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#2B2A2A</item>
+        <item name="colorPrimaryDark">#D30D0D0D</item>
+        <item name="colorAccent">@color/design_default_color_primary</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:scrollbarThumbVertical">@android:color/secondary_text_dark</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item> <!-- анимация окон  -->
+        <item name="android:forceDarkAllowed" tools:targetApi="q">true</item> <!-- темная тема  -->
+    </style>
+
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+    </style>
+
+    <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+    <style name="CustomAnimationButton" parent="@style/Widget.AppCompat.Button">
+        <item name="android:stateListAnimator">@anim/scale_button_pressing</item>
+    </style>
+
+    <style name="MenuStyle" parent="Theme.AppCompat.Light">
+        <item name="android:background">@color/colorWhite</item>
+    </style>
+
+    <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorProject</item>
+        <item name="android:textColorPrimary">@color/colorBlack</item>
+        <item name="android:background">@color/colorWhite</item>
+        <item name="android:radius">100dp</item>
+    </style>
+</resources>

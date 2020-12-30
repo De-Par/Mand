@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1059023564435",
+    "firebase_url": "https://mand-mes.firebaseio.com",
+    "project_id": "mand-mes",
+    "storage_bucket": "mand-mes.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1059023564435:android:baf3e592f2924669e12766",
+        "android_client_info": {
+          "package_name": "com.messenger.mand"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1059023564435-n43m1kdifrr3sjk2tnt60dhao7nrujn6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.messenger.mand",
+            "certificate_hash": "777fcc9bae5d97fb81c722ff473c2c00450c1ab1"
+          }
+        },
+        {
+          "client_id": "1059023564435-8h93mrkm5jqps0gfceq58kgm39rjn5ag.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1dadV9zTld-YQbUHtOXbSe0Rmy03aflA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1059023564435-8h93mrkm5jqps0gfceq58kgm39rjn5ag.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

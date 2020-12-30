@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <!--  <item
+    android:id="@+id/menu_icon_search_users"
+    android:menuCategory="alternative"
+    android:title=""
+    android:icon="@drawable/ic_search_icon"
+    app:showAsAction="ifRoom">
+    </item> -->
+
+    <item
+        android:id="@+id/menu_icon_main"
+        android:menuCategory="alternative"
+        android:title=""
+        android:icon="@drawable/ic_menu"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/item_choose_theme"
+                android:icon="@drawable/ic_label_dark"
+                android:menuCategory="alternative"
+                android:title="@string/dark_theme"
+                app:showAsAction="ifRoom"/>
+
+            <item
+                android:id="@+id/item_settings"
+                android:icon="@drawable/ic_settings_icon"
+                android:menuCategory="alternative"
+                android:title="@string/settings"
+                app:showAsAction="ifRoom"/>
+
+        </menu>
+    </item>
+</menu>

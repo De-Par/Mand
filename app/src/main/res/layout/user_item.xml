@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:stateListAnimator="@android:anim/fade_in"
+    android:divider="@null"
+    android:theme="@style/AppThemeLight"
+    android:dividerHeight="0dp"
+    android:layout_marginTop="18dp"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
+    android:background="@drawable/user_item_background"
+    android:outlineProvider="none"
+    android:nestedScrollingEnabled="false"
+    android:id="@+id/rlUser">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/user_image" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/userName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@+id/profile_image"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:theme="@style/AppThemeLight"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/statusOnline"
+        android:textStyle="normal"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:text="online"
+        android:textColor="@color/colorGreen"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_below="@+id/userName"
+        android:layout_toEndOf="@+id/profile_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_below="@+id/userName"
+        android:layout_toEndOf="@+id/profile_image">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/statusOffline"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:visibility="visible"
+            android:text="offline"
+            android:textColor="@color/colorRed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </FrameLayout>
+
+</RelativeLayout>
