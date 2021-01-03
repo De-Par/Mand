@@ -9,27 +9,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.messenger.mand.Interactions.DatabaseInteraction;
-import com.messenger.mand.Interactions.DateInteraction;
+import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.R;
 
 import java.util.Objects;
-
-import static com.messenger.mand.Activities.MainActivity.themePosition;
 
 public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        Intent intent = getIntent();
-        if (intent != null) {
-            themePosition = intent.getIntExtra("Theme", 0);
-        }
-        if (themePosition == 0) {
-            setTheme(R.style.AppThemeLight);
-        } else {
-            setTheme(R.style.AppThemeNight);
-        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
@@ -66,7 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         DatabaseInteraction dbi = new DatabaseInteraction();
-        dbi.pushUserStatus(DateInteraction.getTimeNow());
+        dbi.pushUserStatus(DataInteraction.getTimeNow());
     }
 
     @Override

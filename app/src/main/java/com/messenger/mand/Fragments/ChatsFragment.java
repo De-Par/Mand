@@ -41,7 +41,6 @@ public class ChatsFragment extends Fragment {
     private ArrayList<String> usersList;
     private RecyclerView recyclerView;
     private ChatAdapter chatAdapter;
-    private TextView noUsers;
     private TextView noSearch;
     private FloatingActionButton fab;
     private TextInputLayout searchLayout;
@@ -62,7 +61,6 @@ public class ChatsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
         recyclerView = view.findViewById(R.id.userListRecyclerView);
-        noUsers = view.findViewById(R.id.noUsers);
         noSearch = view.findViewById(R.id.noSearch);
         fab = view.findViewById(R.id.fab);
         searchLayout = view.findViewById(R.id.til1);

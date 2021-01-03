@@ -1,23 +1,11 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Светлая тема -->
+<resources>
     <style name="AppThemeLight" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">#1565C0</item> <!-- тулбары и задний фон  -->
-        <item name="colorPrimaryDark">#165BAA</item>
-        <item name="colorAccent">@color/colorAccent</item>  <!-- тема фона нижнего подчеркивания  -->
+        <item name="colorPrimary">#0079D7</item>
+        <item name="colorPrimaryDark">#008BF6</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@color/colorBlack</item>
         <item name="android:scrollbarThumbVertical">@android:color/darker_gray</item>
-        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item> <!-- анимация окон  -->
-    </style>
-
-    <!--  Темная тема  -->
-    <style name="AppThemeNight" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">#2B2A2A</item>
-        <item name="colorPrimaryDark">#D30D0D0D</item>
-        <item name="colorAccent">@color/design_default_color_primary</item>
-        <item name="android:textColor">@color/colorWhite</item>
-        <item name="android:scrollbarThumbVertical">@android:color/secondary_text_dark</item>
-        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item> <!-- анимация окон  -->
-        <item name="android:forceDarkAllowed" tools:targetApi="q">true</item> <!-- темная тема  -->
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
 
     <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">

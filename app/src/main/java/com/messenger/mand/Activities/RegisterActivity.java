@@ -12,18 +12,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.messenger.mand.Interactions.DateInteraction;
+import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.R;
 
@@ -98,7 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
             } else if (!txt_password.equals(txt_password_repeat)) {
                 UserInteraction.showPopUpSnackBar(getString(R.string.password_match), v, getApplicationContext());
 
-            } else if (txt_password.length() > 34 || txt_password_repeat.length() > 34) {
+            } else if (txt_password.length() > 34) {
                 UserInteraction.showPopUpSnackBar(getString(R.string.password_max), v, getApplicationContext());
 
             } else if (txt_name.equals("")) {
@@ -124,35 +120,32 @@ public class RegisterActivity extends AppCompatActivity {
         progressDialog.show();
 
         auth.createUserWithEmailAndPassword(email, password).
-                addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                progressDialog.dismiss();
+                addOnCompleteListener(task -> {
+                    progressDialog.dismiss();
 
-                if (task.isSuccessful()) {
-                    Toast.makeText(RegisterActivity.this, getString(R.string.auth_suc),
-                            Toast.LENGTH_SHORT).show();
-                    FirebaseUser firebaseUser = auth.getCurrentUser();
-                    assert firebaseUser != null;
-                    final String id = firebaseUser.getUid();
-                    reference = FirebaseDatabase.getInstance().getReference("Users").child(id);
+                    if (task.isSuccessful()) {
+                        Toast.makeText(RegisterActivity.this, getString(R.string.auth_suc),
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseUser firebaseUser = auth.getCurrentUser();
+                        assert firebaseUser != null;
+                        final String id = firebaseUser.getUid();
+                        reference = FirebaseDatabase.getInstance().getReference("Users").child(id);
 
-                    reference.setValue(createUserMap(id, username, firebaseUser)).addOnCompleteListener(task1 -> {
-                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        finish();
-                    });
+                        reference.setValue(createUserMap(id, username, firebaseUser)).addOnCompleteListener(task1 -> {
+                            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        });
 
-                } else if (!isConnected) {
-                    UserInteraction.showPopUpSnackBar(getString(R.string.internet_connection), view,
-                            getApplicationContext());
-                } else {
-                    Toast.makeText(RegisterActivity.this, getString(R.string.auth_fail),
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+                    } else if (!isConnected) {
+                        UserInteraction.showPopUpSnackBar(getString(R.string.internet_connection), view,
+                                getApplicationContext());
+                    } else {
+                        Toast.makeText(RegisterActivity.this, getString(R.string.auth_fail),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     @Override
@@ -170,7 +163,7 @@ public class RegisterActivity extends AppCompatActivity {
         hashMap.put("name", username);
         hashMap.put("email", firebaseUser.getEmail());
         hashMap.put("avatar", "default");
-        hashMap.put("dateCreation", DateInteraction.getTimeNow());
+        hashMap.put("dateCreation", DataInteraction.getTimeNow());
         hashMap.put("status", "offline");
         hashMap.put("searchName", username.toLowerCase());
 

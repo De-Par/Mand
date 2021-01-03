@@ -74,7 +74,7 @@
             android:layout_margin="20dp"
             app:fabSize="auto"
             app:rippleColor="@color/colorWhite"
-            app:backgroundTint="@color/colorProject"
+            app:backgroundTint="#9E9E9E"
             android:src="@drawable/ic_search_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

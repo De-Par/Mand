@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:paddingStart="@dimen/padding_start"
-                android:textSize="18sp"
+                android:textSize="@dimen/size_txt_field"
                 android:textColor="@android:color/black"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -108,7 +108,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:paddingStart="@dimen/padding_start"
-                android:textSize="18sp"
+                android:textSize="@dimen/size_txt_field"
                 android:textColor="@android:color/black"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -120,7 +120,7 @@
             app:cornerRadius="16dp"
             android:padding="12dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="@dimen/padding_start"
             android:orientation="vertical"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"

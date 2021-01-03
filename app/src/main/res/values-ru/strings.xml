@@ -6,7 +6,7 @@
     <string name="start_text">Welcome to Mand!</string>
     <string name="login">ВОЙТИ</string>
     <string name="register">СОЗДАТЬ</string>
-    <string name="exit">ВЫХОД</string>
+    <string name="exit">Выход</string>
     <string name="login_text">Войдите в учетную запись:</string>
     <string name="register_text">Создайте новую учетную запись:</string>
     <string name="password">Пароль:</string>
@@ -28,7 +28,7 @@
     <string name="delete_text">Вы уверены, что хотите удалить данное сообщение? Информация будет потеряна навсегда.</string>
     <string name="deleted">Удалено</string>
     <string name="message">Сообщение…</string>
-    <string name="bye">До встречи</string>
+    <string name="bye">До встречи!</string>
     <string name="successful">Успешно</string>
     <string name="auth_fail">Ошибка авторизации. Проверьте корректность введенных данных. Возможно, пользователь с данной почтой уже существует.</string>
     <string name="auth_suc">Авторизация прошла успешно</string>

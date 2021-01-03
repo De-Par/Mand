@@ -50,7 +50,6 @@ public class UsersFragment extends Fragment {
     private Animation fbAnim;
 
     private boolean search = false;
-    private boolean isActiveApplication = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -136,7 +135,7 @@ public class UsersFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!userArrayList.isEmpty()) userArrayList.clear();
-                if (isActiveApplication) {
+                if (isAdded()) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         User user = ds.getValue(User.class);
                         assert user != null;
@@ -176,7 +175,7 @@ public class UsersFragment extends Fragment {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if ((etSearch.getText().toString().trim().equals("") || !search) && isActiveApplication) {
+                if ((etSearch.getText().toString().trim().equals("") || !search) && isAdded()) {
                     if (!userArrayList.isEmpty()) userArrayList.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
@@ -206,17 +205,5 @@ public class UsersFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        isActiveApplication = false;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        isActiveApplication = true;
     }
 }

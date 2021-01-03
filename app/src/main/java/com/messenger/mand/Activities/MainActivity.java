@@ -32,7 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.messenger.mand.Adapters.ViewPagerAdapter;
 import com.messenger.mand.Animations.DepthPageTransformer;
-import com.messenger.mand.Interactions.DateInteraction;
+import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
@@ -53,26 +53,15 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     DatabaseReference dbReference;
 
-    private final static int THEME_LIGHT = 0;
-    private final static int THEME_DARK = 1;
-    public static int themePosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        themePosition = loadInformationTheme();
-        if (themePosition == 0) {
-            setTheme(R.style.AppThemeLight);
-        } else {
-            setTheme(R.style.AppThemeNight);
-        }
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         userPhoto = findViewById(R.id.profile_image);
         userName = findViewById(R.id.username);
@@ -116,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     if (!user.getAvatar().equals("default")) {
                         Glide.with(getApplicationContext()).load(user.getAvatar()).into(userPhoto);
                     } else {
-                        userPhoto.setImageResource(R.mipmap.ic_launcher);
+                        userPhoto.setImageResource(R.drawable.user_image);
                     }
                     if (!UserInteraction.hasInternetConnection(MainActivity.this)) {
                             Toast.makeText(MainActivity.this, R.string.internet_connection,
@@ -140,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        updateUserStatus(DateInteraction.getTimeNow());
+        updateUserStatus(DataInteraction.getTimeNow());
     }
 
     @Override
@@ -148,10 +137,6 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         updateUserStatus("online");
     }
-
-    /**
-     * we should delete SUPER to set our actions for this method
-     */
 
     @Override
     public void onBackPressed() {    
@@ -164,26 +149,19 @@ public class MainActivity extends AppCompatActivity {
        getMenuInflater().inflate(R.menu.main_menu, menu);
        return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch(item.getItemId()) {
-
-            case R.id.menu_icon_main:
-                updateMenuIcons();
-                return true;
-
-            case R.id.item_choose_theme:
-               changeApplicationTheme();
-               return true;
-
-           case android.R.id.home:
-               dialogWindowBackPressed();
-               return true;
 
            case R.id.item_settings:
                gotoSettingActivity();
                return true;
+
+           case R.id.item_exit:
+               dialogWindowBackPressed();
+               return true;
+
         }
         return false;
     }
@@ -198,35 +176,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateMenuIcons() {
-        MenuItem menuItem = menu.findItem(R.id.item_choose_theme);
-        if (themePosition == THEME_DARK) {
-            menuItem.setIcon(R.drawable.ic_label_light);
-            menuItem.setTitle(R.string.light_theme);
-        } else {
-            menuItem.setIcon(R.drawable.ic_label_dark);
-            menuItem.setTitle(R.string.dark_theme);
-        }
-    }
-
-    private void saveInformationTheme(int value) {
-        sharedPreferences = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor ed = sharedPreferences.edit();
-        ed.putInt(firebaseUser.getUid(), value);
-        ed.apply();
-    }
-
-    private int loadInformationTheme() {
-        sharedPreferences = getPreferences(MODE_PRIVATE);
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        assert firebaseUser != null;
-        return sharedPreferences.getInt(firebaseUser.getUid(), 0);
-    }
-
-    /**
-     * do not change this parameter to class cs as it damaged
-     */
-
     private void updateUserStatus(String status) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
                 .child("Users").child(firebaseUser.getUid());
@@ -236,31 +185,11 @@ public class MainActivity extends AppCompatActivity {
         reference.updateChildren(hashMap);
     }
 
-    private void exitIntentActivity() {
-        updateUserStatus("Last seen: " + DateInteraction.getTimeNow());
-        FirebaseAuth.getInstance().signOut();
-        Intent intent = new Intent(MainActivity.this,
-                StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
     private void gotoSettingActivity() {
         Intent intentSettings = new Intent(MainActivity.this,
                 SettingsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra("Theme", themePosition);
+                Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intentSettings);
-    }
-
-    private void changeApplicationTheme() {
-        if (themePosition == THEME_DARK) {
-            themePosition = THEME_LIGHT;
-        } else {
-            themePosition = THEME_DARK;
-        }
-        saveInformationTheme(themePosition);
-        updateMenuIcons();
-        recreate();
     }
 
     private void dialogWindowBackPressed() {
@@ -293,4 +222,14 @@ public class MainActivity extends AppCompatActivity {
         }
         alertDialog.show();
     }
+
+    private void exitIntentActivity() {
+        updateUserStatus("Last seen: " + DataInteraction.getTimeNow());
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(MainActivity.this,
+                StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
 }

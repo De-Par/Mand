@@ -6,4 +6,5 @@
     <dimen name="margin_end">25dp</dimen>
     <dimen name="padding_start">15dp</dimen>
     <dimen name="corner_radius">18dp</dimen>
+    <dimen name="size_txt_field">16sp</dimen>
 </resources>

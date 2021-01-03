@@ -7,8 +7,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -23,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,8 +33,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.messenger.mand.Adapters.MessageAdapter;
-import com.messenger.mand.Interactions.DatabaseInteraction;
-import com.messenger.mand.Interactions.DateInteraction;
+import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.Objects.Message;
 import com.messenger.mand.Objects.User;
@@ -49,11 +45,9 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.messenger.mand.Activities.MainActivity.themePosition;
-
 public class ChatActivity extends AppCompatActivity {
 
-    private static final int RC_IMAGE = 123_021_976;
+    private static final int RC_IMAGE = 3316;
     private MessageAdapter adapter;
     private ArrayList<Message> messages;
     private RecyclerView messagesRecyclerView;
@@ -69,18 +63,12 @@ public class ChatActivity extends AppCompatActivity {
     DatabaseReference useReference;
     private StorageReference chatImagesStorageReference;
     private SharedPreferences sharedPreferences;
-    private ValueEventListener seenListener;
     private String recipientUserId;
     String recipientUserName;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (themePosition == 0) {
-            setTheme(R.style.AppThemeLight);
-        } else {
-            setTheme(R.style.AppThemeNight);
-        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
@@ -127,7 +115,7 @@ public class ChatActivity extends AppCompatActivity {
         sendMessageButton.setOnClickListener(v -> {
             if (!UserInteraction.getTrLn(messageEditText).equals("")) {
                 sendMessageToDataBase(firebaseUser.getUid(), recipientUserId,
-                        UserInteraction.getTrLn(messageEditText), "", DateInteraction.getTimeNow());
+                        UserInteraction.getTrLn(messageEditText), "", DataInteraction.getTimeNow());
             } else {
                 Toast.makeText(ChatActivity.this, getString(R.string.null_message),
                         Toast.LENGTH_SHORT).show();
@@ -138,10 +126,10 @@ public class ChatActivity extends AppCompatActivity {
                 {new InputFilter.LengthFilter(600)});
 
         sendImageButton.setOnClickListener(v -> {
-            Intent intent1 = new Intent(Intent.ACTION_GET_CONTENT);
-            intent1.setType("image/*");
-            intent1.putExtra(Intent.EXTRA_LOCAL_ONLY,true);
-            startActivityForResult(Intent.createChooser(intent1, "Choose an image"), RC_IMAGE);
+            Intent i = new Intent();
+            i.setType("image/*");
+            i.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(i, RC_IMAGE);
         });
 
         useReference.addValueEventListener(new ValueEventListener() {
@@ -163,9 +151,53 @@ public class ChatActivity extends AppCompatActivity {
         seenMessage(recipientUserId);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_IMAGE && resultCode == RESULT_OK) {
+            assert data != null;
+            Uri selectedImageUri = data.getData();
+            assert selectedImageUri != null;
+            final StorageReference imageReference = chatImagesStorageReference
+                    .child(Objects.requireNonNull(selectedImageUri.getLastPathSegment()));
+
+            final Dialog progressDialog = new Dialog(ChatActivity.this);
+            progressDialog.setContentView(R.layout.progress_bar);
+            Objects.requireNonNull(progressDialog.getWindow()).
+                    setBackgroundDrawableResource(android.R.color.transparent);
+            progressDialog.show();
+
+            UploadTask uploadTask = imageReference.putFile(selectedImageUri);
+            Task<Uri> urlTask = uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    Toast.makeText(ChatActivity.this, getString(R.string.error_smth),
+                            Toast.LENGTH_SHORT).show();
+                    throw Objects.requireNonNull(task.getException());
+                }
+                return imageReference.getDownloadUrl();
+            }).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    assert downloadUri != null;
+
+                    sendMessageToDataBase(firebaseUser.getUid(), recipientUserId, "",
+                            downloadUri.toString(), DataInteraction.getTimeNow());
+
+                    progressDialog.dismiss();
+                    Toast.makeText(ChatActivity.this, R.string.successful,
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(ChatActivity.this, R.string.error_smth,
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void seenMessage(final String recipientUserId) {
         mesReference = database.getReference().child("Messages");
-        seenListener = mesReference.addValueEventListener(new ValueEventListener() {
+        ValueEventListener seenListener = mesReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -179,13 +211,13 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
 
     private void readMessages(final String userId, final String recipientId, final String imageURL) {
-
        messages = new ArrayList<>();
        mesReference = database.getReference().child("Messages");
 
@@ -228,10 +260,10 @@ public class ChatActivity extends AppCompatActivity {
 
         mesReference.push().setValue(messageMap);
         messageEditText.setText("");
-        sendListOfChatsToDataBase(message, receiver);
+        sendListOfChatsToDataBase();
     }
 
-    private void sendListOfChatsToDataBase(final String msg, final String receiver) {
+    private void sendListOfChatsToDataBase() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().
                 child("ChatsList").child(recipientUserId);
 
@@ -253,75 +285,5 @@ public class ChatActivity extends AppCompatActivity {
         sharedPreferences = getPreferences(MODE_PRIVATE);
         messageEditText.setText(sharedPreferences.
                 getString(recipientUserId + "TEXT", null));
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        DatabaseInteraction dbi = new DatabaseInteraction();
-        dbi.pushUserStatus(DateInteraction.getTimeNow());
-        saveUserData();
-        mesReference.removeEventListener(seenListener);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        DatabaseInteraction dbi = new DatabaseInteraction();
-        dbi.pushUserStatus("online");
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            startActivity(new Intent(ChatActivity.this, MainActivity.class)
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_IMAGE && resultCode == RESULT_OK) {
-            assert data != null;
-            Uri selectedImageUri = data.getData();
-            assert selectedImageUri != null;
-            final StorageReference imageReference = chatImagesStorageReference
-                    .child(Objects.requireNonNull(selectedImageUri.getLastPathSegment()));
-
-            final Dialog progressDialog = new Dialog(ChatActivity.this);
-            progressDialog.setContentView(R.layout.progress_bar);
-            Objects.requireNonNull(progressDialog.getWindow()).
-                    setBackgroundDrawableResource(android.R.color.transparent);
-            progressDialog.show();
-
-            UploadTask uploadTask = imageReference.putFile(selectedImageUri);
-            Task<Uri> urlTask = uploadTask.continueWithTask(task -> {
-                if (!task.isSuccessful()) {
-                    Toast.makeText(ChatActivity.this, getString(R.string.error_smth),
-                            Toast.LENGTH_SHORT).show();
-                    throw Objects.requireNonNull(task.getException());
-                }
-                return imageReference.getDownloadUrl();
-            }).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-                    assert downloadUri != null;
-
-                    sendMessageToDataBase(firebaseUser.getUid(), recipientUserId, "",
-                            downloadUri.toString(), DateInteraction.getTimeNow());
-
-                    progressDialog.dismiss();
-                    Toast.makeText(ChatActivity.this, R.string.successful,
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            Toast.makeText(ChatActivity.this, R.string.error_smth,
-                    Toast.LENGTH_SHORT).show();
-        }
     }
 }

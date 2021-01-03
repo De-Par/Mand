@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:paddingStart="@dimen/padding_start"
-                android:textSize="18sp"
+                android:textSize="@dimen/size_txt_field"
                 android:textColor="@android:color/black"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -112,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:paddingStart="@dimen/padding_start"
-                android:textSize="18sp"
+                android:textSize="@dimen/size_txt_field"
                 android:textColor="@android:color/black"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -141,7 +141,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:paddingStart="@dimen/padding_start"
-                android:textSize="18sp"
+                android:textSize="@dimen/size_txt_field"
                 android:textColor="@android:color/black"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -171,7 +171,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:paddingStart="@dimen/padding_start"
-                android:textSize="18sp"
+                android:textSize="@dimen/size_txt_field"
                 android:textColor="@android:color/black" />
 
         </com.google.android.material.textfield.TextInputLayout>

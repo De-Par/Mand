@@ -16,6 +16,7 @@ public class User {
     public User(String name, String email, String id, String avatar,
                 String status, String dateCreation, String searchName,
                 String lastMessage) {
+
         this.name = name;
         this.email = email;
         this.id = id;

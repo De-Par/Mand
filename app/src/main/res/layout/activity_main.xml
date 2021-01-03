@@ -25,6 +25,7 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:background="@drawable/toolbar_gradient"
                 app:popupTheme="@style/MenuStyle"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize">
@@ -33,7 +34,7 @@
                     android:id="@+id/profile_image"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@mipmap/ic_launcher"/>
 
                 <TextView
                     android:id="@+id/username"
