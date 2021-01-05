@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/colorWhite">
+        android:background="@color/white">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/noUsers"
@@ -24,7 +24,7 @@
             android:paddingEnd="@dimen/margin_end"
             android:gravity="center"
             android:text="@string/noUsers"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:visibility="gone"
             android:paddingBottom="160dp"
@@ -41,7 +41,7 @@
             android:paddingEnd="@dimen/margin_end"
             android:gravity="center"
             android:text="@string/searchNo"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:visibility="gone"
             android:paddingBottom="160dp"
@@ -73,11 +73,12 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="20dp"
             app:fabSize="auto"
-            app:rippleColor="@color/colorWhite"
+            app:rippleColor="@color/white"
             app:backgroundTint="#9E9E9E"
             android:src="@drawable/ic_search_icon"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@string/search" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til1"
@@ -93,7 +94,7 @@
             app:endIconMode="clear_text"
             app:boxStrokeWidth="4dp"
             app:boxStrokeWidthFocused="4dp"
-            app:boxBackgroundColor="@color/colorWhite"
+            app:boxBackgroundColor="@color/white"
             app:boxStrokeColor="@color/colorAccent"
             app:hintTextColor="@color/colorAccent"
             app:hintEnabled="false"
@@ -108,15 +109,14 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName|textCapWords"
                 android:paddingStart="20dp"
+                android:paddingEnd="20dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:hint="@string/search"
-                android:textColorHint="@color/colorBlack"
+                android:textColorHint="@color/black"
                 android:textColor="@android:color/black"
                 android:layout_marginEnd="75dp"/>
 
         </com.google.android.material.textfield.TextInputLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

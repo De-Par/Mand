@@ -18,9 +18,9 @@ public class UserInteraction {
 
     public static void showPopUpSnackBar(String text, View v, Context context) {
         Snackbar snackbar = Snackbar.make(v, text, Snackbar.
-                LENGTH_SHORT).setTextColor(getColor(context, R.color.colorWhite));
+                LENGTH_SHORT).setTextColor(getColor(context, R.color.white));
         snackbar.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
-        snackbar.setBackgroundTint(getColor(context, R.color.colorRed));
+        snackbar.setBackgroundTint(getColor(context, R.color.red));
         snackbar.show();
     }
 

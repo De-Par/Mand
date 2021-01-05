@@ -115,7 +115,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     private String getTime(Message message) {   // преобразует строку времени в формат HH:MM
-        return message.getTime().substring(message.getTime()
-                .length() - 8, message.getTime().length() - 3);
+        return message.getTime().substring(message.getTime().length() - 5);
     }
 }

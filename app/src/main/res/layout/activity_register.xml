@@ -37,7 +37,7 @@
         android:layout_marginTop="20dp"
         android:textStyle="bold"
         android:gravity="center"
-        android:textColor="@color/colorBlack"
+        android:textColor="@color/black"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -83,6 +83,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:paddingStart="@dimen/padding_start"
+                android:paddingEnd="@dimen/padding_start"
                 android:textSize="@dimen/size_txt_field"
                 android:textColor="@android:color/black"/>
 
@@ -112,6 +113,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:paddingStart="@dimen/padding_start"
+                android:paddingEnd="@dimen/padding_start"
                 android:textSize="@dimen/size_txt_field"
                 android:textColor="@android:color/black"/>
 
@@ -141,6 +143,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:paddingStart="@dimen/padding_start"
+                android:paddingEnd="@dimen/padding_start"
                 android:textSize="@dimen/size_txt_field"
                 android:textColor="@android:color/black"/>
 
@@ -171,6 +174,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:paddingStart="@dimen/padding_start"
+                android:paddingEnd="@dimen/padding_start"
                 android:textSize="@dimen/size_txt_field"
                 android:textColor="@android:color/black" />
 
@@ -189,7 +193,7 @@
             android:screenOrientation="portrait"
             android:text="@string/register"
             android:textColor="@android:color/white"
-            app:rippleColor="@color/colorWhite"
+            app:rippleColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
             app:cornerRadius="16dp"

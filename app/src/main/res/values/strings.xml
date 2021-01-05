@@ -51,6 +51,7 @@
     <string name="upload">Upload in progress…</string>
     <string name="search">Search</string>
     <string name="noUsers">Strange, but no new users were found…</string>
+    <string name="noChats">Hmm… You haven\'t started a chat with anyone lately. Start a new conversation in the \"Users\" tab!</string>
     <string name="searchNo">There is no such user in the database.</string>
     <string name="Seen">Seen</string>
     <string name="Delivered">Delivered</string>
@@ -65,4 +66,10 @@
     <string name="you">You:</string>
     <string name="photo">📷 photo</string>
     <string name="null_message">You can not send an empty message.</string>
+    <string name="open_photo">Open photo</string>
+    <string name="change_photo">Change photo</string>
+    <string name="delete_photo">Delete photo</string>
+    <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
+    <string name="at">at</string>
 </resources>

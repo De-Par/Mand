@@ -96,7 +96,7 @@ public class RecoverPasswordActivity extends AppCompatActivity {
 
     public void dialogWindow() {
         AlertDialog.Builder builder = new AlertDialog.Builder(RecoverPasswordActivity.this, R.style.AlertDialogTheme);
-        View view = LayoutInflater.from(RecoverPasswordActivity.this).inflate(R.layout.layout_error_dialog,
+        View view = LayoutInflater.from(RecoverPasswordActivity.this).inflate(R.layout.error_dialog,
                 (ConstraintLayout) findViewById(R.id.layoutDialogContainer));
         builder.setView(view);
         ((TextView) view.findViewById(R.id.textTitle)).setText(getResources().getString(R.string.password_change));

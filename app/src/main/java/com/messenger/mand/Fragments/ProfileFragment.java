@@ -1,12 +1,23 @@
 package com.messenger.mand.Fragments;
 
 import android.animation.Animator;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.media.ImageWriter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +31,7 @@ import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -33,17 +43,21 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.messenger.mand.Activities.ZoomViewActivity;
+import com.messenger.mand.Interactions.DataInteraction;
+import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Locale;
 import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 import static android.app.Activity.RESULT_OK;
@@ -59,6 +73,7 @@ public class ProfileFragment extends Fragment {
     private StorageReference storageReference;
     private static final int IMAGE_REQUEST = 3316;
     private Uri profileUri;
+    private boolean isIcon;
     private StorageTask<UploadTask.TaskSnapshot> uploadTask;
 
     private TextView email;
@@ -108,22 +123,24 @@ public class ProfileFragment extends Fragment {
                 if (!user.getAvatar().equals("default") && isAdded()) {
                     Glide.with(requireContext().getApplicationContext()).
                             load(user.getAvatar()).into(imageProfile);
+
+                    profileUri = Uri.parse(user.getAvatar());
+                    isIcon = false;
                 } else {
                     imageProfile.setImageResource(R.drawable.user_image);
+                    isIcon = true;
                 }
+
                 email.setText(user.getEmail());
                 id.setText(user.getId());
-                dateCreation.setText(user.getDateCreation().substring(0, 10));
+                dateCreation.setText(user.getDateCreation());
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
 
-        imageProfile.setOnLongClickListener(v -> {
-            selectImageProfile();
-            return true;
-        });
+        imageProfile.setOnClickListener(v -> alertDialogChoicer());
         return view;
     }
 
@@ -135,11 +152,10 @@ public class ProfileFragment extends Fragment {
                 && data != null && data.getData() != null) {
 
             profileUri = data.getData();
+            uploadImageToProfile();
 
             if(uploadTask != null && uploadTask.isInProgress()) {
                 Toast.makeText(getContext(), R.string.upload, Toast.LENGTH_SHORT).show();
-            } else {
-                uploadImageToProfile();
             }
         }
     }
@@ -209,4 +225,48 @@ public class ProfileFragment extends Fragment {
         animationDone.playAnimation();
     }
 
+    private void alertDialogChoicer() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        String[] actions = {getString(R.string.open_photo), getString(R.string.change_photo),
+                getString(R.string.delete_photo)};
+        builder.setItems(actions, (dialog, which) -> {
+            switch (which) {
+                case 0: zoomImage(); break;
+                case 1: selectImageProfile(); break;
+                case 2: deleteImageProfile(); break;
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void zoomImage() {
+        if (!isIcon) {
+            Bitmap bitmap = ((BitmapDrawable) imageProfile.getDrawable()).getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] b = baos.toByteArray();
+            startActivity(new Intent(getActivity(), ZoomViewActivity.class).putExtra("photo", b));
+        } else {
+            startActivity(new Intent(getActivity(), ZoomViewActivity.class).putExtra("flag", true));
+        }
+    }
+
+    private void deleteImageProfile() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                .child("Users").child(firebaseUser.getUid());
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("avatar", "default");
+        reference.updateChildren(hashMap);
+
+//        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, profileUri);
+//        startActivityForResult(intent, 2222);
+    }
+
+    private void compression() {
+        //
+    }
 }

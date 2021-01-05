@@ -107,4 +107,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata:2.2.0"
     // Saved state module for ViewModel
     implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.0-rc01'
+    //Photo Viewer
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    implementation 'com.github.MikeOrtiz:TouchImageView:3.0.1'
 }

@@ -36,7 +36,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold"/>
 
@@ -76,7 +76,7 @@
             android:paddingEnd="@dimen/inner_padding_right"
             android:gravity="center_horizontal"
             android:text="@string/soon"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -6,7 +6,7 @@
         android:color="#A29F9F"
         android:forceDarkAllowed="false"/>
     <solid
-        android:color="@color/colorWhite"/>
+        android:color="@color/white"/>
     <corners
         android:radius="18dp"/>
     <padding

@@ -33,6 +33,7 @@ import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class UsersFragment extends Fragment {
 
@@ -68,8 +69,6 @@ public class UsersFragment extends Fragment {
         changAnimOut = AnimationUtils.loadAnimation(getContext(), R.anim.scale_increase);
         fbAnim = AnimationUtils.loadAnimation(getContext(), R.anim.scale_button_pressing);
 
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         if (userArrayList == null) {
@@ -83,7 +82,7 @@ public class UsersFragment extends Fragment {
             public void onAnimationStart(Animation animation) {}
             @Override
             public void onAnimationEnd(Animation animation) {
-                InputMethodManager imm = (InputMethodManager) getActivity().
+                InputMethodManager imm = (InputMethodManager) requireActivity().
                         getSystemService(Context.INPUT_METHOD_SERVICE);
                 assert imm != null;
                 imm.hideSoftInputFromWindow(searchLayout.getWindowToken(), 0);
@@ -182,7 +181,6 @@ public class UsersFragment extends Fragment {
 
                         assert user != null;
                         assert firebaseUser != null;
-
                         if (!user.getId().equals(firebaseUser.getUid()) && isAdded()) {
                             userArrayList.add(user);
                         }

@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +43,7 @@ public class ChatsFragment extends Fragment {
     private RecyclerView recyclerView;
     private ChatAdapter chatAdapter;
     private TextView noSearch;
+    private TextView noChats;
     private FloatingActionButton fab;
     private TextInputLayout searchLayout;
     private EditText etSearch;
@@ -49,6 +51,7 @@ public class ChatsFragment extends Fragment {
     private Animation changAnimIn;
     private Animation changAnimOut;
     private Animation fbAnim;
+    private LottieAnimationView animationNobody;
 
     private boolean search = false;
     private boolean isActiveApplication = true;
@@ -62,14 +65,15 @@ public class ChatsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
         recyclerView = view.findViewById(R.id.userListRecyclerView);
         noSearch = view.findViewById(R.id.noSearch);
+        noChats = view.findViewById(R.id.noChats);
         fab = view.findViewById(R.id.fab);
         searchLayout = view.findViewById(R.id.til1);
         etSearch = view.findViewById(R.id.searchUsers);
 
-        // load animation scale
         changAnimIn = AnimationUtils.loadAnimation(getContext(), R.anim.scale_decrease);
         changAnimOut = AnimationUtils.loadAnimation(getContext(), R.anim.scale_increase);
         fbAnim = AnimationUtils.loadAnimation(getContext(), R.anim.scale_button_pressing);
+        animationNobody = view.findViewById(R.id.lottieAnimNoChats);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -94,7 +98,6 @@ public class ChatsFragment extends Fragment {
                         usersList.add(message.getSender());
                     }
                 }
-
                 readChats();
             }
             @Override
@@ -107,7 +110,7 @@ public class ChatsFragment extends Fragment {
             public void onAnimationStart(Animation animation) {}
             @Override
             public void onAnimationEnd(Animation animation) {
-                InputMethodManager imm = (InputMethodManager) getActivity().
+                InputMethodManager imm = (InputMethodManager) requireActivity().
                         getSystemService(Context.INPUT_METHOD_SERVICE);
                 assert imm != null;
                 imm.hideSoftInputFromWindow(searchLayout.getWindowToken(), 0);
@@ -147,17 +150,14 @@ public class ChatsFragment extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         });
         return view;
     }
 
     private void readChats() {
-
         reference = FirebaseDatabase.getInstance().getReference().child("Users");
         reference.addValueEventListener(new ValueEventListener() {
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mUsers.clear();
@@ -177,6 +177,19 @@ public class ChatsFragment extends Fragment {
                             }
                         }
                     }
+                }
+
+                fab.setEnabled(!mUsers.isEmpty());
+                animationNobody.setSpeed(1.2f);
+
+                if (mUsers.isEmpty()) {
+                    noChats.setVisibility(View.VISIBLE);
+                    animationNobody.setVisibility(View.VISIBLE);
+                    animationNobody.playAnimation();
+                } else {
+                    noChats.setVisibility(View.GONE);
+                    animationNobody.setVisibility(View.GONE);
+                    animationNobody.pauseAnimation();
                 }
                 chatAdapter = new ChatAdapter(getContext(), mUsers);
                 recyclerView.setAdapter(chatAdapter);

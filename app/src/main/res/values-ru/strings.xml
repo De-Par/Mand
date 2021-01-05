@@ -51,7 +51,8 @@
     <string name="upload">Загрузка…</string>
     <string name="search">Поиск</string>
     <string name="noUsers">Странно, но новых пользователей не обнаружено…</string>
-    <string name="searchNo">Данного пользователя нет в базе данных</string>
+    <string name="noChats">Хмм… За последнее время вы ни с кем не создавали чат. Начните новую беседу во вкладке \"Люди\"!</string>
+    <string name="searchNo">Данного пользователя нет в базе данных.</string>
     <string name="Seen">Просмотрено</string>
     <string name="Delivered">Доставлено</string>
     <string name="addInf">Дополнительная информация:</string>
@@ -66,4 +67,10 @@
     <string name="you">Вы:</string>
     <string name="photo">📷 фото</string>
     <string name="null_message">Вы не можете отправить пустое сообщение</string>
+    <string name="open_photo">Открыть фотографию</string>
+    <string name="change_photo">Изменить фотографию</string>
+    <string name="delete_photo">Удалить фотографию</string>
+    <string name="cancel">Отмена</string>
+    <string name="back">Назад</string>
+    <string name="at">в</string>
 </resources>

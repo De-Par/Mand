@@ -1,8 +1,8 @@
 package com.messenger.mand.Activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,7 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
@@ -33,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.messenger.mand.Adapters.ViewPagerAdapter;
 import com.messenger.mand.Animations.DepthPageTransformer;
 import com.messenger.mand.Interactions.DataInteraction;
+import com.messenger.mand.Interactions.LanguageContextWrapper;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
@@ -45,11 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView userPhoto;
     private TextView userName;
-    private Menu menu;
     TabLayout tabLayout;
     ViewPager2 viewPager;
-    private ArrayList<User> userArrayList;
-    static SharedPreferences sharedPreferences;
+    private ArrayList<User> userArrayList;;
     private FirebaseUser firebaseUser;
     DatabaseReference dbReference;
 
@@ -68,10 +66,12 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tab_layout);
         viewPager = findViewById(R.id.view_pager);
 
+        DataInteraction.deleteCache(getApplication());
+
         viewPager.setAdapter(new ViewPagerAdapter(this));
         viewPager.setPageTransformer(new DepthPageTransformer());
-
         if (userArrayList == null) userArrayList = new ArrayList<>();
+
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> {
                     switch (position) {
@@ -91,6 +91,13 @@ public class MainActivity extends AppCompatActivity {
                 });
         tabLayoutMediator.attach();
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            TabLayout.Tab tab = tabLayout.getTabAt(intent.getIntExtra("pos", 0));
+            assert tab != null;
+            tab.select();
+        }
+
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         dbReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
@@ -107,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         userPhoto.setImageResource(R.drawable.user_image);
                     }
+
                     if (!UserInteraction.hasInternetConnection(MainActivity.this)) {
                             Toast.makeText(MainActivity.this, R.string.internet_connection,
                                     Toast.LENGTH_LONG).show();
@@ -118,6 +126,16 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        userPhoto.setOnClickListener(v -> gotoProfile());
+        userName.setOnClickListener(v -> gotoProfile());
+
+
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LanguageContextWrapper.wrap(newBase,"en"));
     }
 
     @Override
@@ -145,15 +163,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-       this.menu = menu;
-       getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-
            case R.id.item_settings:
                gotoSettingActivity();
                return true;
@@ -161,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
            case R.id.item_exit:
                dialogWindowBackPressed();
                return true;
-
         }
         return false;
     }
@@ -194,8 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void dialogWindowBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogTheme);
-        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_warning_dialog,
-                (ConstraintLayout) findViewById(R.id.layoutDialogContainer));
+        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.warning_dialog, findViewById(R.id.layoutDialogContainer));
         builder.setView(view);
         ((TextView) view.findViewById(R.id.textTitle)).setText(getResources().getString(R.string.logout));
         ((TextView) view.findViewById(R.id.textMessage)).setText(getResources().getString(R.string.logout_text));
@@ -230,6 +244,12 @@ public class MainActivity extends AppCompatActivity {
                 StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    private void gotoProfile() {
+        TabLayout.Tab tab = tabLayout.getTabAt(2);
+        assert tab != null;
+        tab.select();
     }
 
 }
