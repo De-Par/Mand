@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+   xmlns:android="http://schemas.android.com/apk/res/android"
+   xmlns:app="http://schemas.android.com/apk/res-auto"
+   xmlns:tools="http://schemas.android.com/tools"
+   android:layout_width="match_parent"
+   android:layout_height="match_parent"
+   android:orientation="vertical"
+   android:theme="@style/AppThemeLight"
+   android:background="@android:color/background_light"
+   android:animateLayoutChanges="true"
+    android:id="@+id/settingsContainer"
+   tools:context=".Activities.SettingsActivity">
+
+   <androidx.constraintlayout.widget.ConstraintLayout
+       android:id="@+id/linearLayoutSettings"
+       android:orientation="vertical"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+
+       <com.google.android.material.appbar.AppBarLayout
+           android:id="@+id/appBarLayout"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           app:layout_constraintTop_toTopOf="parent">
+
+           <com.google.android.material.appbar.MaterialToolbar
+               android:id="@+id/toolbar"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:background="@drawable/toolbar_gradient"
+               android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
+               app:popupTheme="@style/MenuStyle">
+
+               <com.google.android.material.textview.MaterialTextView
+                   android:id="@+id/settingsText"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="@string/settings"
+                   android:textColor="@color/white"
+                   android:textSize="20sp"
+                   android:textStyle="bold"/>
+
+           </com.google.android.material.appbar.MaterialToolbar>
+
+       </com.google.android.material.appbar.AppBarLayout>
+
+       <View
+           android:id="@+id/toolbar_shadow"
+           android:forceDarkAllowed="false"
+           android:layout_width="match_parent"
+           android:layout_height="7dp"
+           android:layout_below="@id/appBarLayout"
+           android:background="@drawable/toolbar_shadow"
+           app:layout_constraintTop_toBottomOf="@+id/appBarLayout"/>
+
+       <androidx.fragment.app.FragmentContainerView
+           android:id="@+id/activity_settings"
+           android:name="com.messenger.mand.Fragments.SettingsFragment"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           app:layout_constraintTop_toTopOf="@id/toolbar_shadow"
+           app:layout_constraintBottom_toBottomOf="parent"/>
+
+   </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<com.airbnb.lottie.LottieAnimationView
+           android:id="@+id/settingAnimation"
+           android:layout_centerInParent="true"
+           android:forceDarkAllowed="false"
+           app:lottie_autoPlay="true"
+           app:lottie_loop="true"
+           app:lottie_rawRes="@raw/animation_uncertainty_screen_man"
+           android:layout_width="350dp"
+           android:layout_height="300dp"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toBottomOf="@+id/toolbar_shadow"
+           android:layout_marginTop="50dp"/>
+
+       <com.google.android.material.textview.MaterialTextView
+           android:id="@+id/textViewSet"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerHorizontal="true"
+           android:paddingStart="@dimen/inner_padding_left"
+           android:paddingEnd="@dimen/inner_padding_right"
+           android:gravity="center_horizontal"
+           android:text="@string/soon"
+           android:textColor="@color/black"
+           android:textSize="16sp"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintTop_toBottomOf="@+id/settingAnimation"/>-->

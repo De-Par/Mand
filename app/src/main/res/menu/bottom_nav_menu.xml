@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/navigation_chats"
+        android:icon="@drawable/chat_tab"
+        android:title="@string/chats"
+        app:cnb_iconColor="@color/white"
+        app:cnb_textColor="@color/white"
+        app:cnb_backgroundColor="@color/colorProjectMiddle"/>
+
+    <item
+        android:id="@+id/navigation_users"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/users"
+        app:cnb_iconColor="@color/white"
+        app:cnb_textColor="@color/white"
+        app:cnb_backgroundColor="@color/colorProjectMiddle"/>
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/profile_tab"
+        android:title="@string/profile"
+        app:cnb_iconColor="@color/white"
+        app:cnb_textColor="@color/white"
+        app:cnb_backgroundColor="@color/colorProjectMiddle"/>
+
+</menu>
