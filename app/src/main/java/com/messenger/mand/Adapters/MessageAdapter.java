@@ -1,6 +1,9 @@
 package com.messenger.mand.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.messenger.mand.Activities.ZoomViewActivity;
+import com.messenger.mand.Objects.Constants;
+import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Objects.Message;
 import com.messenger.mand.R;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
@@ -78,7 +85,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         } else {
             holder.txt_img.setImageResource(R.drawable.ic_seen_icon);
         }
+
+        holder.photoImageView.setOnClickListener(v -> {
+            zoomImage(holder);
+        });
     }
+
     @Override
     public int getItemViewType(int position) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -114,7 +126,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
     }
 
-    private String getTime(Message message) {   // преобразует строку времени в формат HH:MM
+    private String getTime(Message message) {  //  HH:mm
         return message.getTime().substring(message.getTime().length() - 5);
+    }
+
+    private void zoomImage(ViewHolder holder) {
+        byte[] arr = DataInteraction.convertDrawableToByteArr(((BitmapDrawable) holder.photoImageView.
+                getDrawable()).getBitmap(), Constants.ORIGINAL);
+        context.startActivity(new Intent(context, ZoomViewActivity.class).putExtra("photo", arr));
     }
 }

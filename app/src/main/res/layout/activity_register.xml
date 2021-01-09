@@ -27,7 +27,7 @@
         android:id="@+id/toolbar_shadow"
         android:layout_width="match_parent"
         android:layout_height="7dp"
-        android:background="@drawable/toolbar_dropshadow"
+        android:background="@drawable/toolbar_shadow"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
 
     <com.google.android.material.textview.MaterialTextView
@@ -72,6 +72,7 @@
             app:boxCornerRadiusTopEnd="15dp"
             app:boxCornerRadiusTopStart="15dp"
             android:layout_marginBottom="20dp"
+            app:startIconDrawable="@drawable/ic_mail"
             app:boxStrokeWidth="2dp"
             app:hintAnimationEnabled="true"
             app:layout_constraintBottom_toBottomOf="@+id/ImageViewLogin"
@@ -102,6 +103,7 @@
             app:boxCornerRadiusTopEnd="15dp"
             app:boxCornerRadiusTopStart="15dp"
             app:passwordToggleEnabled="true"
+            app:startIconDrawable="@drawable/ic_key"
             app:boxStrokeWidth="2dp"
             app:hintAnimationEnabled="true"
             app:layout_constraintTop_toBottomOf="@+id/til1"
@@ -132,6 +134,7 @@
             app:boxCornerRadiusTopEnd="15dp"
             app:boxCornerRadiusTopStart="15dp"
             app:passwordToggleEnabled="true"
+            app:startIconDrawable="@drawable/ic_key"
             app:boxStrokeWidth="2dp"
             app:hintAnimationEnabled="true"
             app:layout_constraintTop_toBottomOf="@+id/til2"
@@ -149,6 +152,66 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/til4"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="@string/phone"-->
+<!--            android:layout_marginStart="30dp"-->
+<!--            android:layout_marginEnd="30dp"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            app:boxCornerRadiusBottomEnd="15dp"-->
+<!--            app:boxCornerRadiusBottomStart="15dp"-->
+<!--            app:boxCornerRadiusTopEnd="15dp"-->
+<!--            app:boxCornerRadiusTopStart="15dp"-->
+<!--            app:boxStrokeWidth="2dp"-->
+<!--            app:startIconDrawable="@drawable/ic_phone"-->
+<!--            app:hintAnimationEnabled="true"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/til3"-->
+<!--            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
+
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/phoneEditText"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:inputType="phone"-->
+<!--                android:paddingStart="@dimen/padding_start"-->
+<!--                android:paddingEnd="@dimen/padding_start"-->
+<!--                android:textSize="@dimen/size_txt_field"-->
+<!--                android:textColor="@android:color/black" />-->
+
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/til5"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="@string/dateBirth"-->
+<!--            android:layout_marginStart="30dp"-->
+<!--            android:layout_marginEnd="30dp"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            app:boxCornerRadiusBottomEnd="15dp"-->
+<!--            app:boxCornerRadiusBottomStart="15dp"-->
+<!--            app:boxCornerRadiusTopEnd="15dp"-->
+<!--            app:boxCornerRadiusTopStart="15dp"-->
+<!--            app:boxStrokeWidth="2dp"-->
+<!--            app:startIconDrawable="@drawable/ic_calendar"-->
+<!--            app:hintAnimationEnabled="true"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/til4"-->
+<!--            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
+
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/dateEditText"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:inputType="date"-->
+<!--                android:paddingStart="@dimen/padding_start"-->
+<!--                android:paddingEnd="@dimen/padding_start"-->
+<!--                android:textSize="@dimen/size_txt_field"-->
+<!--                android:textColor="@android:color/black" />-->
+
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til4"
             android:layout_width="match_parent"
@@ -164,6 +227,7 @@
             app:counterMaxLength="20"
             app:counterEnabled="true"
             app:boxStrokeWidth="2dp"
+            app:startIconDrawable="@drawable/ic_person_white"
             app:hintAnimationEnabled="true"
             app:layout_constraintTop_toBottomOf="@+id/til3"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">

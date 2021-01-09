@@ -11,13 +11,18 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,11 +34,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.messenger.mand.Adapters.UserAdapter;
+import com.messenger.mand.Interactions.UserInteraction;
+import com.messenger.mand.Interfaces.DataPasser;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class UsersFragment extends Fragment {
 
@@ -45,12 +51,17 @@ public class UsersFragment extends Fragment {
     private FloatingActionButton fab;
     private TextInputLayout searchLayout;
     private EditText etSearch;
+    private View gotoProfile;
 
     private Animation changAnimIn;
     private Animation changAnimOut;
     private Animation fbAnim;
 
+    private DatabaseReference userRef;
+    private FirebaseUser firebaseUser;
+
     private boolean search = false;
+    private DataPasser dataPasser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,8 +74,14 @@ public class UsersFragment extends Fragment {
         fab = view.findViewById(R.id.fab);
         searchLayout = view.findViewById(R.id.til1);
         etSearch = view.findViewById(R.id.searchUsers);
+        gotoProfile = view.findViewById(R.id.clickableZone);
+        ImageView userPhoto = view.findViewById(R.id.profile_image);
+        TextView userName = view.findViewById(R.id.username);
 
-        // load animation scale
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
+
         changAnimIn = AnimationUtils.loadAnimation(getContext(), R.anim.scale_decrease);
         changAnimOut = AnimationUtils.loadAnimation(getContext(), R.anim.scale_increase);
         fbAnim = AnimationUtils.loadAnimation(getContext(), R.anim.scale_button_pressing);
@@ -74,9 +91,12 @@ public class UsersFragment extends Fragment {
         if (userArrayList == null) {
             userArrayList = new ArrayList<>();
         }
-        //
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         readUsers();
-        //
+
+        gotoProfile.setOnClickListener(v -> passData("goto_profile"));
+
         changAnimIn.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {}
@@ -93,7 +113,6 @@ public class UsersFragment extends Fragment {
             @Override
             public void onAnimationRepeat(Animation animation) {}
         });
-
         fab.setOnClickListener(v -> {
             fab.startAnimation(fbAnim);
             if (search) {
@@ -106,7 +125,6 @@ public class UsersFragment extends Fragment {
                 search = true;
             }
         });
-
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -122,7 +140,43 @@ public class UsersFragment extends Fragment {
             public void afterTextChanged(Editable s) {
             }
         });
+
+        assert firebaseUser != null;
+        userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseUser.getUid());
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                assert user != null;
+                userName.setText(user.getName());
+
+                if (!user.getAvatar().equals("default")) {
+                    Glide.with(view.getRootView()).load(user.getAvatar()).into(userPhoto);
+                } else {
+                    userPhoto.setImageResource(R.drawable.user_image);
+                }
+
+                if (!UserInteraction.hasInternetConnection(view.getContext())) {
+                    Toast.makeText(view.getContext(), R.string.internet_connection,
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+
         return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        dataPasser = (DataPasser) context;
+    }
+
+    public void passData(String data) {
+        dataPasser.onDataPass(data);
     }
 
     private void searchUsersByCharacter(String character) {

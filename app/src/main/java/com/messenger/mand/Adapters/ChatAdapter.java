@@ -94,7 +94,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
     }
 
     private void displayLastMessage(final String userId, final TextView lastMessage, final User user) {
-
         finalText = "default";
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
@@ -134,7 +133,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
         if (message.getSender().equals(currentId)) {
             return context.getString(R.string.you) + " ";
         }
-        return user.getName() + ": ";
+        return "";
     }
 
     private String defineMessageType(Message message) {

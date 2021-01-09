@@ -1,6 +1,7 @@
 package com.messenger.mand.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,14 +12,21 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.bumptech.glide.Glide;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,7 +37,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import com.ismaeldivita.chipnavigation.ChipNavigationBar;
+import com.messenger.mand.Activities.NavigationActivity;
 import com.messenger.mand.Adapters.ChatAdapter;
+import com.messenger.mand.Interactions.UserInteraction;
+import com.messenger.mand.Interfaces.DataPasser;
 import com.messenger.mand.Objects.Message;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
@@ -47,6 +60,9 @@ public class ChatsFragment extends Fragment {
     private FloatingActionButton fab;
     private TextInputLayout searchLayout;
     private EditText etSearch;
+    private View gotoProfile;
+    private ChipNavigationBar bottomNav;
+    private FragmentManager fragmentManager;
 
     private Animation changAnimIn;
     private Animation changAnimOut;
@@ -54,9 +70,12 @@ public class ChatsFragment extends Fragment {
     private LottieAnimationView animationNobody;
 
     private boolean search = false;
-    private boolean isActiveApplication = true;
+
     private FirebaseUser firebaseUser;
-    private DatabaseReference reference;
+    private DatabaseReference messageRef;
+    private DatabaseReference userRef;
+
+    DataPasser dataPasser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,6 +88,15 @@ public class ChatsFragment extends Fragment {
         fab = view.findViewById(R.id.fab);
         searchLayout = view.findViewById(R.id.til1);
         etSearch = view.findViewById(R.id.searchUsers);
+        gotoProfile = view.findViewById(R.id.clickableZone);
+        bottomNav = view.findViewById(R.id.bottomActionBar);
+
+        ImageView userPhoto = view.findViewById(R.id.profile_image);
+        TextView userName = view.findViewById(R.id.username);
+
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
 
         changAnimIn = AnimationUtils.loadAnimation(getContext(), R.anim.scale_decrease);
         changAnimOut = AnimationUtils.loadAnimation(getContext(), R.anim.scale_increase);
@@ -82,8 +110,35 @@ public class ChatsFragment extends Fragment {
         usersList = new ArrayList<>();
         mUsers = new ArrayList<>();
 
-        reference = FirebaseDatabase.getInstance().getReference().child("Messages");
-        reference.addValueEventListener(new ValueEventListener() {
+        gotoProfile.setOnClickListener(v -> passData("goto_profile"));
+
+        assert firebaseUser != null;
+        userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseUser.getUid());
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                assert user != null;
+                userName.setText(user.getName());
+
+                if (!user.getAvatar().equals("default")) {
+                    Glide.with(view.getRootView()).load(user.getAvatar()).into(userPhoto);
+                } else {
+                    userPhoto.setImageResource(R.drawable.user_image);
+                }
+
+                if (!UserInteraction.hasInternetConnection(view.getContext())) {
+                    Toast.makeText(view.getContext(), R.string.internet_connection,
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+
+        messageRef = FirebaseDatabase.getInstance().getReference().child("Messages");
+        messageRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usersList.clear();
@@ -100,14 +155,17 @@ public class ChatsFragment extends Fragment {
                 }
                 readChats();
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
 
         changAnimIn.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {}
+            public void onAnimationStart(Animation animation) {
+            }
+
             @Override
             public void onAnimationEnd(Animation animation) {
                 InputMethodManager imm = (InputMethodManager) requireActivity().
@@ -118,8 +176,10 @@ public class ChatsFragment extends Fragment {
                 searchLayout.setVisibility(View.GONE);
                 etSearch.setVisibility(View.GONE);
             }
+
             @Override
-            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationRepeat(Animation animation) {
+            }
         });
 
         fab.setOnClickListener(v -> {
@@ -136,9 +196,9 @@ public class ChatsFragment extends Fragment {
         });
 
         etSearch.addTextChangedListener(new TextWatcher() {
-
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
@@ -150,14 +210,26 @@ public class ChatsFragment extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
+
         return view;
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        dataPasser = (DataPasser) context;
+    }
+
+    public void passData(String data) {
+        dataPasser.onDataPass(data);
+    }
+
     private void readChats() {
-        reference = FirebaseDatabase.getInstance().getReference().child("Users");
-        reference.addValueEventListener(new ValueEventListener() {
+        messageRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        messageRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mUsers.clear();
@@ -196,7 +268,8 @@ public class ChatsFragment extends Fragment {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
         });
 
     }
@@ -210,7 +283,7 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mUsers.clear();
-                if (isActiveApplication) {
+                if (isAdded()) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         User user = ds.getValue(User.class);
                         assert user != null;
@@ -227,7 +300,7 @@ public class ChatsFragment extends Fragment {
                     readChats();
                     recyclerView.setVisibility(View.VISIBLE);
                     noSearch.setVisibility(View.GONE);
-                } else if (mUsers.isEmpty()){
+                } else if (mUsers.isEmpty()) {
                     noSearch.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
                 } else {
@@ -235,20 +308,10 @@ public class ChatsFragment extends Fragment {
                     noSearch.setVisibility(View.GONE);
                 }
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
         });
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        isActiveApplication = false;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        isActiveApplication = true;
     }
 }

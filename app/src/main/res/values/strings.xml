@@ -11,6 +11,8 @@
     <string name="register_text">Create a new account:</string>
     <string name="password">Password:</string>
     <string name="email">Email:</string>
+    <string name="phone">Phone:</string>
+    <string name="dateBirth">Birthday:</string>
     <string name="confirm_password">Confirm password:</string>
     <string name="nickname">Nickname:</string>
     <string name="greeting">Hello</string>
@@ -31,6 +33,7 @@
     <string name="bye">Goodbye!</string>
     <string name="successful">Successful</string>
     <string name="auth_fail">Authentication failed! Perhaps a user with such mail exists.</string>
+    <string name="auth_fail_short">Authentication failed.</string>
     <string name="auth_suc">Authentication success.</string>
     <string name="error_base">Authentication failed! There is no such user in database.</string>
     <string name="error_smth">Error</string>
@@ -52,7 +55,7 @@
     <string name="search">Search</string>
     <string name="noUsers">Strange, but no new users were found…</string>
     <string name="noChats">Hmm… You haven\'t started a chat with anyone lately. Start a new conversation in the \"Users\" tab!</string>
-    <string name="searchNo">There is no such user in the database.</string>
+    <string name="noSearch">The user with the given name does not exist in the database.</string>
     <string name="Seen">Seen</string>
     <string name="Delivered">Delivered</string>
     <string name="addInf">Additional info:</string>
@@ -60,9 +63,9 @@
     <string name="forgotPassword">Forgot password?</string>
     <string name="reset">Reset</string>
     <string name="title_reset">Enter your email to reset your password:</string>
-    <string name="check_email">Successful! Please, check your Email.</string>
+    <string name="check_email">Successful! Please, check your mailbox.</string>
     <string name="password_change">Change password:</string>
-    <string name="password_change_question">By clicking YES, you agree to send you an email to change your password.</string>
+    <string name="password_change_question">By clicking YES, you consent to sending you a letter, containing further instructions for changing the password.</string>
     <string name="you">You:</string>
     <string name="photo">📷 photo</string>
     <string name="null_message">You can not send an empty message.</string>
@@ -72,4 +75,11 @@
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>
     <string name="at">at</string>
+    <string name="sign_google">Sign in with Google</string>
+    <string name="online">online</string>
+    <string name="lastSeen">Last seen in</string>
+    <string name="title_activity_navigation">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

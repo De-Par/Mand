@@ -11,6 +11,8 @@
     <string name="register_text">Создайте новую учетную запись:</string>
     <string name="password">Пароль:</string>
     <string name="email">Email:</string>
+    <string name="phone">Телефон:</string>
+    <string name="dateBirth">Дата рождения:</string>
     <string name="confirm_password">Подтвердите пароль:</string>
     <string name="nickname">Имя:</string>
     <string name="greeting">Здравствуйте</string>
@@ -31,6 +33,7 @@
     <string name="bye">До встречи!</string>
     <string name="successful">Успешно</string>
     <string name="auth_fail">Ошибка авторизации. Проверьте корректность введенных данных. Возможно, пользователь с данной почтой уже существует.</string>
+    <string name="auth_fail_short">Ошибка авторизации.</string>
     <string name="auth_suc">Авторизация прошла успешно</string>
     <string name="error_base">При аутентификации возникла ошибка: данного пользователя нет в базе данных!</string>
     <string name="error_smth">Ошибка</string>
@@ -52,7 +55,7 @@
     <string name="search">Поиск</string>
     <string name="noUsers">Странно, но новых пользователей не обнаружено…</string>
     <string name="noChats">Хмм… За последнее время вы ни с кем не создавали чат. Начните новую беседу во вкладке \"Люди\"!</string>
-    <string name="searchNo">Данного пользователя нет в базе данных.</string>
+    <string name="noSearch">Пользователя с данным именем отсутствует в базе данных.</string>
     <string name="Seen">Просмотрено</string>
     <string name="Delivered">Доставлено</string>
     <string name="addInf">Дополнительная информация:</string>
@@ -60,10 +63,9 @@
     <string name="forgotPassword">Забыли пароль?</string>
     <string name="reset">Сброс</string>
     <string name="title_reset">Введите ваш Email для сброса пароля:</string>
-    <string name="check_email">Успешно! Пожалуйста, проверьте ваш Email</string>
+    <string name="check_email">Успешно! Пожалуйста, проверьте ваш почтовый ящик.</string>
     <string name="password_change">Смена пароля:</string>
-    <string name="password_change_question">Нажимая кнопку ДА, вы даете согласие на отправку вам письма,
-        содержащего дальнейшие указания для смены пароля.</string>
+    <string name="password_change_question">Нажимая кнопку ДА, вы даете согласие на отправку вам письма, содержащего дальнейшие указания для смены пароля.</string>
     <string name="you">Вы:</string>
     <string name="photo">📷 фото</string>
     <string name="null_message">Вы не можете отправить пустое сообщение</string>
@@ -73,4 +75,7 @@
     <string name="cancel">Отмена</string>
     <string name="back">Назад</string>
     <string name="at">в</string>
+    <string name="sign_google">Войти через Google</string>
+    <string name="online">online</string>
+    <string name="lastSeen">Был(а) в сети</string>
 </resources>

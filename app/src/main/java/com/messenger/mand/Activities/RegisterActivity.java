@@ -132,7 +132,7 @@ public class RegisterActivity extends AppCompatActivity {
                         reference = FirebaseDatabase.getInstance().getReference("Users").child(id);
 
                         reference.setValue(createUserMap(id, username, firebaseUser)).addOnCompleteListener(task1 -> {
-                            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                            Intent intent = new Intent(RegisterActivity.this, NavigationActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             finish();

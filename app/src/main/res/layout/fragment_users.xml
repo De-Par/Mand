@@ -16,6 +16,45 @@
         android:orientation="vertical"
         android:background="@color/white">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:background="@drawable/toolbar_gradient"
+            app:popupTheme="@style/MenuStyle"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/clickableZone"
+                android:layout_margin="0dp"
+                android:padding="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@mipmap/ic_launcher"/>
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/noUsers"
             android:layout_width="wrap_content"
@@ -40,7 +79,7 @@
             android:paddingStart="@dimen/margin_start"
             android:paddingEnd="@dimen/margin_end"
             android:gravity="center"
-            android:text="@string/searchNo"
+            android:text="@string/noSearch"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:visibility="gone"
@@ -53,7 +92,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userListRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:fastScrollEnabled="true"
             android:scrollbarSize="5dp"
             android:verticalScrollbarPosition="right"
@@ -61,9 +100,9 @@
             android:isScrollContainer="true"
             android:scrollbars="vertical"
             android:smoothScrollbar="true"
-            app:layout_anchorGravity="center"
             android:scrollIndicators="right"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            android:paddingTop="14dp"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
@@ -118,5 +157,7 @@
                 android:layout_marginEnd="75dp"/>
 
         </com.google.android.material.textfield.TextInputLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

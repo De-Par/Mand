@@ -7,15 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.messenger.mand.Activities.ChatActivity;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
-
 import java.util.ArrayList;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
@@ -47,13 +44,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             Glide.with(context).load(user.getAvatar()).into(userViewHolder.avatar);
         }
 
+        String status;
         if (user.getStatus().equals("online")) {
-            userViewHolder.statusOnline.setVisibility(View.VISIBLE);
-            userViewHolder.statusOffline.setVisibility(View.GONE);
+            status = context.getString(R.string.online);
+            userViewHolder.statusOnline.setTextColor(context.getResources().getColor(R.color.green, context.getTheme()));
         } else {
-            userViewHolder.statusOffline.setVisibility(View.VISIBLE);
-            userViewHolder.statusOnline.setVisibility(View.GONE);
+            status = context.getString(R.string.lastSeen) + " " + user.getStatus();
+            userViewHolder.statusOnline.setTextColor(context.getResources().getColor(R.color.black_overlay, context.getTheme()));
         }
+        userViewHolder.statusOnline.setText(status);
 
         userViewHolder.itemView.setOnClickListener(v -> {
             final Intent intent = new Intent(context, ChatActivity.class);
@@ -72,14 +71,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         private final ImageView avatar;
         private final TextView user_name;
         private final TextView statusOnline;
-        private final TextView statusOffline;
 
         UserViewHolder(@NonNull View view) {
             super(view);
             avatar = view.findViewById(R.id.profile_image);
             user_name = view.findViewById(R.id.userName);
             statusOnline = view.findViewById(R.id.statusOnline);
-            statusOffline = view.findViewById(R.id.statusOffline);
         }
     }
 }

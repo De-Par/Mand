@@ -2,10 +2,9 @@ package com.messenger.mand.Interactions;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
-
-import com.messenger.mand.R;
-
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,4 +49,9 @@ public class DataInteraction {
         }
     }
 
+    public static byte[] convertDrawableToByteArr(Bitmap bitmap, int quality) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+        return baos.toByteArray();
+    }
 }

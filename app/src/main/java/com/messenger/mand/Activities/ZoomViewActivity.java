@@ -3,7 +3,6 @@ package com.messenger.mand.Activities;
 import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -91,20 +90,13 @@ public class ZoomViewActivity extends AppCompatActivity {
         }
 
         mContentView.setOnClickListener(v -> toggle());
-        btnBack.setOnClickListener(v -> goBack());
+        btnBack.setOnClickListener(v -> finish());
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         delayedHide(0);
-    }
-
-    private void goBack() {
-        Intent i = new Intent(getApplication(), MainActivity.class);
-        i.putExtra("pos", 2);
-        startActivity(i);
-        finish();
     }
 
     private void toggle() {

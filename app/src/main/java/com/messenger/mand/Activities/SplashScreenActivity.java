@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.R;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -19,7 +20,6 @@ public class SplashScreenActivity extends AppCompatActivity {
     Animation bottomAnim;
     ImageView imageView;
     TextView textView;
-    final int timeDelay = 1100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, timeDelay);
+        }, Constants.SPLASH_DELAY);
     }
 }
