@@ -1,4 +1,4 @@
-package com.messenger.mand.Notification;
+package com.messenger.mand.Notifications;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;

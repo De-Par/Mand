@@ -1,4 +1,4 @@
-package com.messenger.mand.Notification;
+package com.messenger.mand.Notifications;
 
 public class Token {
     private String token;

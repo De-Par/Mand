@@ -20,7 +20,7 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:background="@drawable/toolbar_gradient"
+            android:background="@color/colorPrimary"
             app:popupTheme="@style/MenuStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -62,7 +62,7 @@
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:lottie_rawRes="@raw/empty_and_lost"
+            app:lottie_rawRes="@raw/anim_oops_smth_lost"
             android:layout_width="wrap_content"
             android:layout_height="350dp"
             app:lottie_autoPlay="true"
@@ -125,7 +125,7 @@
             app:fabSize="auto"
             app:rippleColor="@color/white"
             app:backgroundTint="#9E9E9E"
-            android:src="@drawable/ic_search_icon"
+            android:src="@drawable/ic_search"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:contentDescription="@string/search" />

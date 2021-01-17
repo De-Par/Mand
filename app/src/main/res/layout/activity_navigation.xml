@@ -3,8 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
+    android:theme="@style/AppThemeLight"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".Activities.NavigationActivity">
 
     <FrameLayout
@@ -14,14 +16,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/bottomActionBar"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/colorBackground"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_container"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
     <com.ismaeldivita.chipnavigation.ChipNavigationBar
         android:id="@+id/bottomActionBar"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:forceDarkAllowed="true"
+        android:layout_height="54dp"
         android:layout_gravity="bottom"
         android:focusedByDefault="true"
         android:background="@drawable/rounded_bar"
-        app:cnb_addBottomInset="true"
         app:cnb_unselectedColor="@color/black"
         app:cnb_menuResource="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"/>

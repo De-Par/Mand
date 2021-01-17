@@ -1,6 +1,7 @@
 package com.messenger.mand.Activities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.messenger.mand.Interactions.DataInteraction;
+import com.messenger.mand.Interactions.LanguageContextWrapper;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.R;
 
@@ -75,7 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
         }});
 
         RegisterButton.setOnClickListener(v -> {
-            butt = AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_button_pressing);
+            butt = AnimationUtils.loadAnimation(getBaseContext(), R.anim.anim_scale_button_pressing);
             RegisterButton.startAnimation(butt);
 
             UserInteraction.hideKeyboard(RegisterActivity.this);  //  not important for such situation
@@ -110,7 +112,15 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private  void register(final String email, final String password, final String username,
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(RegisterActivity.this, StartActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void register(final String email, final String password, final String username,
                            final boolean isConnected, final View view) {
 
         final Dialog progressDialog = new Dialog(this);
@@ -148,14 +158,6 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(RegisterActivity.this, StartActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
     private HashMap<String, String> createUserMap(String id, String username, FirebaseUser firebaseUser) {
         HashMap<String, String> hashMap = new HashMap<>();
 
@@ -164,7 +166,7 @@ public class RegisterActivity extends AppCompatActivity {
         hashMap.put("email", firebaseUser.getEmail());
         hashMap.put("avatar", "default");
         hashMap.put("dateCreation", DataInteraction.getTimeNow());
-        hashMap.put("status", "offline");
+        hashMap.put("status", "online");
         hashMap.put("searchName", username.toLowerCase());
 
         return hashMap;

@@ -2,7 +2,6 @@ package com.messenger.mand.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,7 +23,6 @@ import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Objects.Message;
 import com.messenger.mand.R;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
@@ -81,9 +79,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         holder.messageTimeView.setText(getTime(message));
 
         if (message.getIsSeen().equals("Delivered")) {
-            holder.txt_img.setImageResource(R.drawable.ic_done_icon);
+            holder.txt_img.setImageResource(R.drawable.ic_delivered);
         } else {
-            holder.txt_img.setImageResource(R.drawable.ic_seen_icon);
+            holder.txt_img.setImageResource(R.drawable.ic_seen);
         }
 
         holder.photoImageView.setOnClickListener(v -> {

@@ -1,4 +1,4 @@
-package com.messenger.mand.Notification;
+package com.messenger.mand.Notifications;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

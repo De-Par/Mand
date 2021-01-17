@@ -3,10 +3,9 @@ package com.messenger.mand.Activities;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,8 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,13 +37,20 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
 
     private FragmentManager fragmentManager;
     private ChipNavigationBar bottomNav;
-
     private boolean isExit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isNight = preferences.getBoolean("theme", false);
+        if (isNight) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
 
         bottomNav = findViewById(R.id.bottomActionBar);
 
@@ -79,6 +87,17 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.item_settings) {
+            gotoSettingActivity();
+        } else if (id == R.id.item_exit) {
+            dialogWindowBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onStart() {
         isExit = false;
         checkUserStatus();
@@ -106,29 +125,17 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
         dialogWindowBackPressed();
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.main_menu, menu);
-//        return true;
-//    }
-
     @Override
     public void onDataPass(String data) {
-        if (data.equals("goto_profile")) {
-            bottomNav.setItemSelected(R.id.navigation_profile, true);
+        switch (data) {
+            case Constants.LINK_PROFILE:
+                bottomNav.setItemSelected(R.id.navigation_profile, true);
+                break;
+            case Constants.LINK_USERS:
+                bottomNav.setItemSelected(R.id.navigation_users, true);
+                break;
+            default: bottomNav.setItemSelected(R.id.navigation_chats, true);
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.item_settings) {
-            gotoSettingActivity();
-        } else if (id == R.id.item_exit) {
-            dialogWindowBackPressed();
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void checkUserStatus() {
@@ -153,7 +160,7 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
         ((TextView) view.findViewById(R.id.textMessage)).setText(getResources().getString(R.string.logout_text));
         ((Button) view.findViewById(R.id.buttonNo)).setText(getResources().getString(R.string.no));
         ((Button) view.findViewById(R.id.buttonYes)).setText(getResources().getString(R.string.yes));
-        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_exit_icon);
+        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_exit);
 
         final AlertDialog alertDialog = builder.create();
 

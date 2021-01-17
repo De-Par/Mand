@@ -1,11 +1,12 @@
 package com.messenger.mand.Fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -39,10 +40,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
-import com.messenger.mand.Activities.NavigationActivity;
 import com.messenger.mand.Adapters.ChatAdapter;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.Interfaces.DataPasser;
+import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.Objects.Message;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
@@ -98,9 +99,9 @@ public class ChatsFragment extends Fragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
 
-        changAnimIn = AnimationUtils.loadAnimation(getContext(), R.anim.scale_decrease);
-        changAnimOut = AnimationUtils.loadAnimation(getContext(), R.anim.scale_increase);
-        fbAnim = AnimationUtils.loadAnimation(getContext(), R.anim.scale_button_pressing);
+        changAnimIn = AnimationUtils.loadAnimation(getContext(), R.anim.anim_scale_decrease);
+        changAnimOut = AnimationUtils.loadAnimation(getContext(), R.anim.anim_scale_increase);
+        fbAnim = AnimationUtils.loadAnimation(getContext(), R.anim.anim_scale_button_pressing);
         animationNobody = view.findViewById(R.id.lottieAnimNoChats);
 
         recyclerView.setHasFixedSize(true);
@@ -110,7 +111,7 @@ public class ChatsFragment extends Fragment {
         usersList = new ArrayList<>();
         mUsers = new ArrayList<>();
 
-        gotoProfile.setOnClickListener(v -> passData("goto_profile"));
+        gotoProfile.setOnClickListener(v -> passData(Constants.LINK_PROFILE));
 
         assert firebaseUser != null;
         userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseUser.getUid());
@@ -121,10 +122,10 @@ public class ChatsFragment extends Fragment {
                 assert user != null;
                 userName.setText(user.getName());
 
-                if (!user.getAvatar().equals("default")) {
+                if (!user.getAvatar().equals("default") && isAdded()) {
                     Glide.with(view.getRootView()).load(user.getAvatar()).into(userPhoto);
                 } else {
-                    userPhoto.setImageResource(R.drawable.user_image);
+                    userPhoto.setImageResource(R.drawable.profile_image_default);
                 }
 
                 if (!UserInteraction.hasInternetConnection(view.getContext())) {
@@ -214,7 +215,14 @@ public class ChatsFragment extends Fragment {
             }
         });
 
+        setHasOptionsMenu(true);
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.search_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

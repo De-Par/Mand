@@ -1,11 +1,15 @@
 package com.messenger.mand.Activities;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -28,6 +32,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.messenger.mand.Interactions.DataInteraction;
+import com.messenger.mand.Interactions.LanguageContextWrapper;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.R;
 import com.shobhitpuri.custombuttons.GoogleSignInButton;
@@ -73,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         googleButton = findViewById(R.id.googleLoginBtn);
         forgotPassword = findViewById(R.id.recoveryPassword);
-        btnAnim = AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_button_pressing);
+        btnAnim = AnimationUtils.loadAnimation(getBaseContext(), R.anim.anim_scale_button_pressing);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -123,13 +128,14 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN && resultCode == Activity.RESULT_OK) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                assert account != null;
-                firebaseAuthWithGoogle(account.getIdToken());
+                if (account != null) {
+                    firebaseAuthWithGoogle(account.getIdToken());
+                }
             } catch (ApiException e) {
                 UserInteraction.showPopUpSnackBar(""+e.getMessage(), getWindow().getCurrentFocus(),
                         getApplicationContext());
@@ -190,14 +196,17 @@ public class LoginActivity extends AppCompatActivity {
                         FirebaseUser user = auth.getCurrentUser();
                         assert user != null;
                         String id = user.getUid();
+                        boolean isNewer = Objects.requireNonNull(Objects.requireNonNull(task.getResult()).
+                                getAdditionalUserInfo()).isNewUser();
 
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(id);
-                        reference.setValue(createUserMap(id, user.getDisplayName(), user)).addOnCompleteListener(task1 -> {
-                            Intent intent = new Intent(LoginActivity.this, NavigationActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                            finish();
-                        });
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
+                        if (isNewer) {
+                            reference.setValue(createUserMap(id, user.getDisplayName(), user)).addOnCompleteListener(task1 -> {
+                                gotoMainActivity();
+                            });
+                        } else {
+                            gotoMainActivity();
+                        }
                         //updateUI(user);
                     } else {
                         // If sign in fails, display a message to the user.
@@ -205,7 +214,7 @@ public class LoginActivity extends AppCompatActivity {
                                 getWindow().getCurrentFocus(), getApplicationContext());
                         //updateUI(null);
                     }
-                }).addOnFailureListener(e -> UserInteraction.showPopUpSnackBar(""+e.getMessage(),
+                }).addOnFailureListener(e -> UserInteraction.showPopUpSnackBar(""+e.getLocalizedMessage(),
                         getWindow().getCurrentFocus(), getApplicationContext()));
     }
 
@@ -217,10 +226,18 @@ public class LoginActivity extends AppCompatActivity {
         hashMap.put("email", firebaseUser.getEmail());
         hashMap.put("avatar", "default");
         hashMap.put("dateCreation", DataInteraction.getTimeNow());
-        hashMap.put("status", "offline");
+        hashMap.put("status", "online");
         hashMap.put("searchName", username.toLowerCase());
 
         return hashMap;
+    }
+
+    private void gotoMainActivity() {
+        Intent intent = new Intent(LoginActivity.this,
+                NavigationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 }
 

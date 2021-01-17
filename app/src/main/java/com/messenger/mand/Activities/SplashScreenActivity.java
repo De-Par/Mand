@@ -30,8 +30,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         textView = findViewById(R.id.startTextLabel);
         imageView = findViewById(R.id.startSplashLabel);
 
-        topAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.splash_image);
-        bottomAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.splash_text);
+        topAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_splash_image);
+        bottomAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_splash_text);
 
         imageView.startAnimation(topAnim);
         textView.startAnimation(bottomAnim);

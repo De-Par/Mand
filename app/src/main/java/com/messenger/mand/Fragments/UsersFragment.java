@@ -1,10 +1,15 @@
 package com.messenger.mand.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -17,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,9 +39,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.messenger.mand.Activities.NavigationActivity;
 import com.messenger.mand.Adapters.UserAdapter;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.Interfaces.DataPasser;
+import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
 
@@ -51,14 +59,10 @@ public class UsersFragment extends Fragment {
     private FloatingActionButton fab;
     private TextInputLayout searchLayout;
     private EditText etSearch;
-    private View gotoProfile;
 
     private Animation changAnimIn;
     private Animation changAnimOut;
     private Animation fbAnim;
-
-    private DatabaseReference userRef;
-    private FirebaseUser firebaseUser;
 
     private boolean search = false;
     private DataPasser dataPasser;
@@ -74,7 +78,7 @@ public class UsersFragment extends Fragment {
         fab = view.findViewById(R.id.fab);
         searchLayout = view.findViewById(R.id.til1);
         etSearch = view.findViewById(R.id.searchUsers);
-        gotoProfile = view.findViewById(R.id.clickableZone);
+        View gotoProfile = view.findViewById(R.id.clickableZone);
         ImageView userPhoto = view.findViewById(R.id.profile_image);
         TextView userName = view.findViewById(R.id.username);
 
@@ -82,9 +86,9 @@ public class UsersFragment extends Fragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
 
-        changAnimIn = AnimationUtils.loadAnimation(getContext(), R.anim.scale_decrease);
-        changAnimOut = AnimationUtils.loadAnimation(getContext(), R.anim.scale_increase);
-        fbAnim = AnimationUtils.loadAnimation(getContext(), R.anim.scale_button_pressing);
+        changAnimIn = AnimationUtils.loadAnimation(getContext(), R.anim.anim_scale_decrease);
+        changAnimOut = AnimationUtils.loadAnimation(getContext(), R.anim.anim_scale_increase);
+        fbAnim = AnimationUtils.loadAnimation(getContext(), R.anim.anim_scale_button_pressing);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -92,10 +96,10 @@ public class UsersFragment extends Fragment {
             userArrayList = new ArrayList<>();
         }
 
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         readUsers();
 
-        gotoProfile.setOnClickListener(v -> passData("goto_profile"));
+        gotoProfile.setOnClickListener(v -> passData(Constants.LINK_PROFILE));
 
         changAnimIn.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -113,6 +117,7 @@ public class UsersFragment extends Fragment {
             @Override
             public void onAnimationRepeat(Animation animation) {}
         });
+
         fab.setOnClickListener(v -> {
             fab.startAnimation(fbAnim);
             if (search) {
@@ -125,6 +130,7 @@ public class UsersFragment extends Fragment {
                 search = true;
             }
         });
+
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -142,7 +148,7 @@ public class UsersFragment extends Fragment {
         });
 
         assert firebaseUser != null;
-        userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseUser.getUid());
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseUser.getUid());
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -150,10 +156,10 @@ public class UsersFragment extends Fragment {
                 assert user != null;
                 userName.setText(user.getName());
 
-                if (!user.getAvatar().equals("default")) {
+                if (!user.getAvatar().equals("default") && isAdded()) {
                     Glide.with(view.getRootView()).load(user.getAvatar()).into(userPhoto);
                 } else {
-                    userPhoto.setImageResource(R.drawable.user_image);
+                    userPhoto.setImageResource(R.drawable.profile_image_default);
                 }
 
                 if (!UserInteraction.hasInternetConnection(view.getContext())) {
@@ -165,8 +171,25 @@ public class UsersFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
+        setHasOptionsMenu(true);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.search_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_icon_search) {
+            //passData(Constants.LINK_USERS);
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

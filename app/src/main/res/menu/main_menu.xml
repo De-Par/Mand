@@ -4,6 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_icon_edit"
+        android:menuCategory="alternative"
+        android:title=""
+        android:icon="@drawable/ic_edit"
+        android:iconTint="@color/white"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/menu_icon_main"
         android:menuCategory="alternative"
         android:title=""
@@ -20,7 +28,7 @@
 
             <item
                 android:id="@+id/item_exit"
-                android:icon="@drawable/ic_exit_icon"
+                android:icon="@drawable/ic_exit"
                 android:menuCategory="alternative"
                 android:title="@string/exit"
                 app:showAsAction="ifRoom"/>

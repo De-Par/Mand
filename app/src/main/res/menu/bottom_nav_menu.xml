@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/navigation_chats"
-        android:icon="@drawable/chat_tab"
+        android:icon="@drawable/tab_chats"
         android:title="@string/chats"
         app:cnb_iconColor="@color/white"
         app:cnb_textColor="@color/white"
@@ -12,7 +12,7 @@
 
     <item
         android:id="@+id/navigation_users"
-        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:icon="@drawable/ic_dashboard"
         android:title="@string/users"
         app:cnb_iconColor="@color/white"
         app:cnb_textColor="@color/white"
@@ -20,7 +20,7 @@
 
     <item
         android:id="@+id/navigation_profile"
-        android:icon="@drawable/profile_tab"
+        android:icon="@drawable/tab_profile"
         android:title="@string/profile"
         app:cnb_iconColor="@color/white"
         app:cnb_textColor="@color/white"

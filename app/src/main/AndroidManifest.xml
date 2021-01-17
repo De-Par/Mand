@@ -32,29 +32,35 @@
             android:parentActivityName=".Activities.SplashScreenActivity" />
         <activity
             android:name=".Activities.NavigationActivity"
-            android:parentActivityName=".Activities.StartActivity" />
+            android:parentActivityName=".Activities.StartActivity"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".Activities.ChatActivity"
-            android:parentActivityName=".Activities.NavigationActivity" />
+            android:parentActivityName=".Activities.NavigationActivity"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".Activities.RecoverPasswordActivity"
-            android:parentActivityName=".Activities.LoginActivity" />
+            android:parentActivityName=".Activities.LoginActivity"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".Activities.SettingsActivity"
-            android:parentActivityName=".Activities.NavigationActivity" />
+            android:parentActivityName=".Activities.NavigationActivity"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".Activities.RegisterActivity"
-            android:parentActivityName=".Activities.StartActivity" />
+            android:parentActivityName=".Activities.StartActivity"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".Activities.LoginActivity"
-            android:parentActivityName=".Activities.StartActivity" />
+            android:parentActivityName=".Activities.StartActivity"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".Activities.ZoomViewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/AppThemeLight.Fullscreen" />
 
         <service
-            android:name=".Notification.FirebaseMessaging"
+            android:name=".Notifications.FirebaseMessaging"
             android:enabled="true"
             android:exported="false"
             android:stopWithTask="false">
@@ -62,6 +68,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
     </application>
+
 </manifest>

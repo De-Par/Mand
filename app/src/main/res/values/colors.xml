@@ -1,20 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorAccent">#6200EA</color>
-    <color name="white">#FFFFFF</color>
-    <color name="white_dark">#DEDEDE</color>
-    <color name="white_overlay"> #E7E7E7</color>
-    <color name="black">#000000</color>
+    <!--Theme-->
     <color name="colorProject">#1565C0</color>
-    <color name="colorProjectLight">#008BF6</color>
-    <color name="colorProjectMiddle">#096EDB</color>
+    <color name="colorAccent">#6200EA</color>
+    <color name="colorPrimary">#0489EF</color>
+    <color name="colorPrimaryDark">#0079D7</color>
+
+    <!--Additional variants-->
+    <color name="white">#FFFFFF</color>
+    <color name="white_dark">#E8E3E3</color>
+    <color name="white_overlay">#E7E7E7</color>
+
+    <!--Main colors-->
+    <color name="black">#000000</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="greyDark">#404040</color>
     <color name="yellow">#FFCC00</color>
     <color name="green">#18A61F</color>
     <color name="red">#D22020</color>
-    <color name="greyDark">#404040</color>
+
+    <!--Additional variants-->
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
     <color name="light_blue_A200">#FF40C4FF</color>
     <color name="light_blue_A400">#FF00B0FF</color>
-    <color name="black_overlay">#66000000</color>
+
+    <!--Project colors variants-->
+    <color name="colorProjectLight">#008BF6</color>
+    <color name="colorProjectMiddle">#096EDB</color>
+
+    <!--Start activities colors-->
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorBigBtn">#0079D7</color>
+    <color name="colorHintETStart">#494949</color>
+    <color name="colorIconsStart">#818181</color>
+    <color name="colorBackgroundET">#FFFFFF</color>
+    <color name="colorDialogText">#000000</color>
+
+    <!--Cursor in ET-->
+    <color name="colorCursor">#0489EF</color>
+
+    <!--Dialogs elements-->
+    <!-- see higher   -->
+
 </resources>

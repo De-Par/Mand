@@ -31,8 +31,6 @@ public class RecoverPasswordActivity extends AppCompatActivity {
     private EditText send_email;
     private String email;
     private FirebaseAuth firebaseAuth;
-    ImageView my_image;
-    Animation animation_image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +42,10 @@ public class RecoverPasswordActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        my_image = findViewById(R.id.password_image);
         my_button = findViewById(R.id.sendEmailButton);
         send_email = findViewById(R.id.sendEmailToRecover);
 
-        animation_image = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_up_to_down_image);
-        animation_button = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_button_pressing);
-        animation_image.setRepeatCount(Animation.INFINITE);
-        my_image.startAnimation(animation_image);
+        animation_button = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_scale_button_pressing);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -70,6 +64,14 @@ public class RecoverPasswordActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(RecoverPasswordActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void recoverEmailSuccessful() {
         firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -86,14 +88,6 @@ public class RecoverPasswordActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(RecoverPasswordActivity.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
     public void dialogWindow() {
         AlertDialog.Builder builder = new AlertDialog.Builder(RecoverPasswordActivity.this, R.style.AlertDialogTheme);
         View view = LayoutInflater.from(RecoverPasswordActivity.this).inflate(R.layout.error_dialog,
@@ -103,7 +97,7 @@ public class RecoverPasswordActivity extends AppCompatActivity {
         ((TextView) view.findViewById(R.id.textMessage)).setText(getResources().getString(R.string.password_change_question));
         ((Button) view.findViewById(R.id.buttonNo)).setText(getResources().getString(R.string.no));
         ((Button) view.findViewById(R.id.buttonYes)).setText(getResources().getString(R.string.yes));
-        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_new_releases);
+        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_error);
 
         final AlertDialog alertDialog = builder.create();
 

@@ -1,11 +1,15 @@
 package com.messenger.mand.Activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NavUtils;
+import androidx.preference.PreferenceManager;
 
 import com.messenger.mand.Fragments.SettingsFragment;
 import com.messenger.mand.Interactions.DatabaseInteraction;
@@ -14,6 +18,19 @@ import com.messenger.mand.R;
 import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity {
+
+    private SharedPreferences preferences;
+
+    SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs, key) -> {
+        if (key.equals("theme")) {
+            boolean isNight = prefs.getBoolean("theme", false);
+            if (isNight) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +47,7 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     }
 
     @Override
@@ -48,14 +66,15 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        preferences.registerOnSharedPreferenceChangeListener(listener);
         DatabaseInteraction.pushUserStatus(getString(R.string.online));
         super.onResume();
     }
 
     @Override
     protected void onPause() {
+        preferences.unregisterOnSharedPreferenceChangeListener(listener);
         DatabaseInteraction.pushUserStatus(DataInteraction.getTimeNow());
         super.onPause();
     }
-
 }

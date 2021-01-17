@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/layoutDialogContainer"
-    android:forceDarkAllowed="false"
+    android:forceDarkAllowed="true"
     android:padding="20dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
+            android:forceDarkAllowed="false"
             android:gravity="center_horizontal"
             android:background="@drawable/title_error_background"
             android:textColor="@color/white"
@@ -78,6 +79,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="40dp"
         android:textColor="@color/white"
+        android:forceDarkAllowed="false"
         android:textSize="14sp"
         android:textStyle="bold"
         app:cornerRadius="12dp"

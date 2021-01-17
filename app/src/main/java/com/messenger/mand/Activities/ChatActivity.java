@@ -148,7 +148,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
                 if (user.getAvatar().equals("default")) {
-                    avatar.setImageResource(R.drawable.user_image);
+                    avatar.setImageResource(R.drawable.profile_image_default);
                 } else {
                     Glide.with(getApplicationContext()).load(user.getAvatar()).into(avatar);
                 }

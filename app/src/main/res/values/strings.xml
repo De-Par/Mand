@@ -78,8 +78,7 @@
     <string name="sign_google">Sign in with Google</string>
     <string name="online">online</string>
     <string name="lastSeen">Last seen in</string>
-    <string name="title_activity_navigation">MainActivity</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

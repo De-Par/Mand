@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -16,7 +17,11 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
@@ -25,7 +30,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
@@ -85,7 +93,13 @@ public class ProfileFragment extends Fragment {
         email = view.findViewById(R.id.txtMail);
         id = view.findViewById(R.id.txtId);
         dateCreation = view.findViewById(R.id.txtDate);
-        animationDone = view.findViewById(R.id.lottieAnimation);
+        animationDone = view.findViewById(R.id.lottieAnimationDone);
+
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
+
+        imageProfile.setOnClickListener(v -> alertDialogChoicer());
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").
@@ -106,7 +120,6 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onAnimationRepeat(Animator animation) {}
         });
-
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -122,10 +135,9 @@ public class ProfileFragment extends Fragment {
                     isIcon = false;
 
                 } else {
-                    imageProfile.setImageResource(R.drawable.user_image);
+                    imageProfile.setImageResource(R.drawable.profile_image_default);
                     isIcon = true;
                 }
-
                 email.setText(user.getEmail());
                 id.setText(user.getId());
                 dateCreation.setText(user.getDateCreation());
@@ -135,14 +147,28 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        imageProfile.setOnClickListener(v -> alertDialogChoicer());
+        setHasOptionsMenu(true);
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_icon_edit) {
+            Log.println(Log.INFO, Constants.TAG, "HEllo");
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if(requestCode == IMAGE_REQUEST && resultCode == RESULT_OK
                 && data != null && data.getData() != null) {
 
@@ -216,7 +242,8 @@ public class ProfileFragment extends Fragment {
 
     private void successfulAnimation() {
         animationDone.setVisibility(View.VISIBLE);
-        animationDone.setSpeed(0.8f);
+        animationDone.setSpeed(1.2f);
+        animationDone.bringToFront();
         animationDone.playAnimation();
     }
 

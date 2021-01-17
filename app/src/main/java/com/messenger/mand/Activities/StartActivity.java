@@ -1,23 +1,22 @@
 package com.messenger.mand.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.messenger.mand.Interactions.LanguageContextWrapper;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.R;
 
 public class StartActivity extends AppCompatActivity {
 
-    protected ImageView imageView;
-    protected Animation animation;
     private Button login, register, exit;
     private Animation buttonAnimation;
     private byte stateButton = 0;
@@ -48,13 +47,8 @@ public class StartActivity extends AppCompatActivity {
         login = findViewById(R.id.login);
         register = findViewById(R.id.register);
         exit = findViewById(R.id.exit);
-        imageView = findViewById(R.id.start_image);
 
-        animation = AnimationUtils.loadAnimation(this, R.anim.position_down_to_up);
-        animation.setRepeatCount(Animation.INFINITE);
-        imageView.startAnimation(animation);
-
-        buttonAnimation = AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_button_pressing);
+        buttonAnimation = AnimationUtils.loadAnimation(getBaseContext(), R.anim.anim_scale_button_pressing);
 
         login.setOnClickListener(v -> {
             stateButton = 1;
@@ -94,15 +88,20 @@ public class StartActivity extends AppCompatActivity {
        });
     }
 
-    private void shutdownApp() {
-        Toast.makeText(StartActivity.this, R.string.bye,
-                Toast.LENGTH_SHORT).show();
-        finishAffinity();
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LanguageContextWrapper.wrap(newBase,"ru"));
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Toast.makeText(StartActivity.this, R.string.bye,
+                Toast.LENGTH_SHORT).show();
+        finishAffinity();
+    }
+
+    private void shutdownApp() {
         Toast.makeText(StartActivity.this, R.string.bye,
                 Toast.LENGTH_SHORT).show();
         finishAffinity();

@@ -6,7 +6,7 @@
    android:layout_width="match_parent"
    android:layout_height="match_parent"
    android:orientation="vertical"
-   android:theme="@style/AppThemeLight"
+   android:theme="@style/Theme.AppCompat.DayNight"
    android:background="@android:color/background_light"
    android:animateLayoutChanges="true"
     android:id="@+id/settingsContainer"
@@ -28,7 +28,7 @@
                android:id="@+id/toolbar"
                android:layout_width="match_parent"
                android:layout_height="match_parent"
-               android:background="@drawable/toolbar_gradient"
+               android:background="@color/colorPrimary"
                android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
                app:popupTheme="@style/MenuStyle">
 
@@ -45,22 +45,12 @@
 
        </com.google.android.material.appbar.AppBarLayout>
 
-       <View
-           android:id="@+id/toolbar_shadow"
-           android:forceDarkAllowed="false"
-           android:layout_width="match_parent"
-           android:layout_height="7dp"
-           android:layout_below="@id/appBarLayout"
-           android:background="@drawable/toolbar_shadow"
-           app:layout_constraintTop_toBottomOf="@+id/appBarLayout"/>
-
        <androidx.fragment.app.FragmentContainerView
            android:id="@+id/activity_settings"
            android:name="com.messenger.mand.Fragments.SettingsFragment"
            android:layout_width="match_parent"
            android:layout_height="match_parent"
-           app:layout_constraintTop_toTopOf="@id/toolbar_shadow"
-           app:layout_constraintBottom_toBottomOf="parent"/>
+           app:layout_constraintTop_toBottomOf="@id/appBarLayout" />
 
    </androidx.constraintlayout.widget.ConstraintLayout>
 

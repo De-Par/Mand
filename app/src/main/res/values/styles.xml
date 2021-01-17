@@ -1,13 +1,21 @@
 <resources>
 
     <style name="AppThemeLight" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">#0079D7</item>
-        <item name="colorPrimaryDark">#008BF6</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
         <item name="android:textColor">@color/black</item>
         <item name="android:scrollbarThumbVertical">@android:color/darker_gray</item>
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+    </style>
+
+    <style name="ActivityAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/anim_activity_open_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/anim_activity_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/anim_activity_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/anim_activity_close_exit</item>
     </style>
 
     <style name="DialogTheme" parent="AppThemeLight">
@@ -26,11 +34,12 @@
     </style>
 
     <style name="CustomAnimationButton" parent="@style/Widget.AppCompat.Button">
-        <item name="android:stateListAnimator">@anim/scale_button_pressing</item>
+        <item name="android:stateListAnimator">@anim/anim_scale_button_pressing</item>
     </style>
 
     <style name="MenuStyle" parent="Theme.AppCompat.Light">
         <item name="android:background">@color/white</item>
+        <item name="iconTint">@color/white</item>
     </style>
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
