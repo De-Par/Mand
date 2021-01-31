@@ -2,10 +2,15 @@ package com.messenger.mand.Activities;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +38,8 @@ import com.messenger.mand.Interfaces.DataPasser;
 import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.R;
 
+import java.util.Locale;
+
 public class NavigationActivity extends AppCompatActivity implements DataPasser {
 
     private FragmentManager fragmentManager;
@@ -44,7 +51,8 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         boolean isNight = preferences.getBoolean("theme", false);
         if (isNight) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -63,17 +71,14 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
 
         bottomNav.setOnItemSelectedListener(i -> {
             Fragment fragment = null;
-            switch (i) {
-                case R.id.navigation_chats:
-                    fragment = new ChatsFragment();
-                    break;
-                case R.id.navigation_users:
-                    fragment = new UsersFragment();
-                    break;
-                case R.id.navigation_profile:
-                    fragment = new ProfileFragment();
-                    break;
+            if (i == R.id.navigation_chats) {
+                fragment = new ChatsFragment();
+            } else if (i == R.id.navigation_users) {
+                fragment = new UsersFragment();
+            } else if (i == R.id.navigation_profile) {
+                fragment = new ProfileFragment();
             }
+
             if (fragment != null) {
                 fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit();
@@ -81,10 +86,15 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
         });
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LanguageContextWrapper.wrap(newBase,"en"));
-    }
+//    @Override
+//    protected void attachBaseContext(Context newBase) {
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        String lang = preferences.getString("language_preference", "ru");
+//        if (lang == null) {
+//            lang = Locale.getDefault().getLanguage();
+//        }
+//        super.attachBaseContext(LanguageContextWrapper.wrap(newBase, lang));
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -93,6 +103,8 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
             gotoSettingActivity();
         } else if (id == R.id.item_exit) {
             dialogWindowBackPressed();
+        } else if (id == R.id.menu_icon_edit) {
+            showEditDialog();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -138,6 +150,18 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
         }
     }
 
+//    public void setLocale(String lang) {
+//        Locale myLocale = new Locale(lang);
+//        Resources res = getResources();
+//        DisplayMetrics dm = res.getDisplayMetrics();
+//        Configuration conf = res.getConfiguration();
+//        conf.locale = myLocale;
+//        res.updateConfiguration(conf, dm);
+//        Intent refresh = new Intent(this, NavigationActivity.class);
+//        finish();
+//        startActivity(refresh);
+//    }
+
     private void checkUserStatus() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -150,6 +174,27 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
                 SettingsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intentSettings);
+    }
+
+    private void showEditDialog() {
+        String[] options = {"Edit name", "Edit phone", "About you"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplication());
+        builder.setTitle("Title");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (i == 0) {
+
+                } else if (i == 1) {
+
+                } else if (i == 2) {
+
+                } else if (i == 3) {
+
+                }
+            }
+        });
+        builder.create().show();
     }
 
     private void dialogWindowBackPressed() {

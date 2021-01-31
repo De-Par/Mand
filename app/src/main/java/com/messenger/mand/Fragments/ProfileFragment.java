@@ -1,22 +1,18 @@
 package com.messenger.mand.Fragments;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
-import android.content.Context;
+import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,11 +28,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -49,15 +49,13 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.messenger.mand.Activities.ZoomViewActivity;
+import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -72,10 +70,11 @@ public class ProfileFragment extends Fragment {
     private FirebaseUser firebaseUser;
 
     private StorageReference storageReference;
-    private static final int IMAGE_REQUEST = 3316;
-    private Uri profileUri;
     private boolean isIcon;
     private StorageTask<UploadTask.TaskSnapshot> uploadTask;
+    String[] galleryPermissions;
+    String[] cameraPermissions;
+    Uri imageUri = null;
 
     private TextView email;
     private TextView id;
@@ -87,6 +86,9 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
 
         imageProfile = view.findViewById(R.id.profile_image);
         userName = view.findViewById(R.id.username);
@@ -95,16 +97,15 @@ public class ProfileFragment extends Fragment {
         dateCreation = view.findViewById(R.id.txtDate);
         animationDone = view.findViewById(R.id.lottieAnimationDone);
 
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
-
-        imageProfile.setOnClickListener(v -> alertDialogChoicer());
-
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").
                 child(firebaseUser.getUid());
         storageReference = FirebaseStorage.getInstance().getReference().child("Avatar_Images");
+
+        cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        galleryPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+        imageProfile.setOnClickListener(v -> alertDialogChoicer());
 
         animationDone.addAnimatorListener(new Animator.AnimatorListener() {
             @Override
@@ -120,6 +121,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onAnimationRepeat(Animator animation) {}
         });
+
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -130,8 +132,6 @@ public class ProfileFragment extends Fragment {
                 if (!user.getAvatar().equals("default") && isAdded()) {
                     Glide.with(requireContext().getApplicationContext()).
                             load(user.getAvatar()).into(imageProfile);
-
-                    profileUri = Uri.parse(user.getAvatar());
                     isIcon = false;
 
                 } else {
@@ -161,7 +161,7 @@ public class ProfileFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menu_icon_edit) {
-            Log.println(Log.INFO, Constants.TAG, "HEllo");
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -169,75 +169,104 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == Constants.IMAGE_PICK_STORAGE_REQUEST_CODE) {
+                imageUri = data.getData();
+                uploadImageToProfile(imageUri);
+            }
+            if (requestCode == Constants.IMAGE_PICK_CAMERA_REQUEST_CODE) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                String path = MediaStore.Images.Media.insertImage(getActivity().getContentResolver(),
+                        imageBitmap, "Date" + " - " + Calendar.getInstance().getTime(), null);
+                uploadImageToProfile(Uri.parse(path));
+            }
 
-            profileUri = data.getData();
-            uploadImageToProfile();
-
-            if(uploadTask != null && uploadTask.isInProgress()) {
+            if (uploadTask != null && uploadTask.isInProgress()) {
                 Toast.makeText(getContext(), R.string.upload, Toast.LENGTH_SHORT).show();
             }
+
         }
     }
 
-    private void selectImageProfile() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, IMAGE_REQUEST);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Constants.CAMERA_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    boolean camAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean writeStorageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (camAccepted && writeStorageAccepted) {
+                        pickFromCamera();
+                    } else {
+                        UserInteraction.showPopUpSnackBar("Enable camera and storage permission", getView(), getContext());
+                    }
+                }
+            }
+            break;
+            case Constants.STORAGE_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    boolean writeStorageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (writeStorageAccepted) {
+                        pickFromGallery();
+                    } else {
+                        UserInteraction.showPopUpSnackBar("Enable storage permission", getView(), getContext());
+                    }
+                }
+            }
+            break;
+        }
     }
 
-    private String getFileExtension(Uri uri) {
-        ContentResolver contentResolver = requireContext().getContentResolver();
-        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    private void pickFromCamera() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "Temp Pic");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description");
+
+        Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(camIntent, Constants.IMAGE_PICK_CAMERA_REQUEST_CODE);
     }
 
-    private void uploadImageToProfile() {
+    private void pickFromGallery() {
+        Intent galleryIntent = new Intent();
+        galleryIntent.setAction(Intent.ACTION_PICK);
+        galleryIntent.setType("image/*");
+        startActivityForResult(galleryIntent, Constants.IMAGE_PICK_STORAGE_REQUEST_CODE);
+    }
+
+    private void uploadImageToProfile(Uri uri) {
         final Dialog progressDialog = new Dialog(getContext());
         progressDialog.setContentView(R.layout.progress_bar);
         Objects.requireNonNull(progressDialog.getWindow()).
                 setBackgroundDrawableResource(android.R.color.transparent);
         progressDialog.show();
 
-        if (profileUri != null) {
-            final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
-                    + "." + getFileExtension(profileUri));
-            uploadTask = fileReference.putFile(profileUri);
-            uploadTask.continueWithTask(task -> {
-                if (!task.isSuccessful()) {
-                    throw Objects.requireNonNull(task.getException());
-                }
-                return fileReference.getDownloadUrl();
+        String pathFileName = System.currentTimeMillis() + "_" + firebaseUser.getUid();
 
-            }).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-                    assert downloadUri != null;
-                    String mUri = downloadUri.toString();
+        final StorageReference fileReference = storageReference.child(pathFileName);
+        fileReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+            while (!uriTask.isSuccessful());
+            Uri downloadUri = uriTask.getResult();
 
-                    databaseReference = FirebaseDatabase.getInstance().getReference()
-                            .child("Users").child(firebaseUser.getUid());
-                    HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("avatar", mUri);
-                    databaseReference.updateChildren(hashMap);
-
-                } else {
-                    Toast.makeText(getContext(), R.string.error_smth, Toast.LENGTH_SHORT).show();
-                }
+            if (uriTask.isSuccessful()) {
+                String mUri = downloadUri.toString();
+                databaseReference = FirebaseDatabase.getInstance().getReference()
+                        .child("Users").child(firebaseUser.getUid());
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("avatar", mUri);
+                databaseReference.updateChildren(hashMap);
                 progressDialog.dismiss();
                 successfulAnimation();
 
-            }).addOnFailureListener(e -> {
-                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), R.string.error_smth, Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
-                successfulAnimation();
-            });
-
-        } else {
-            Toast.makeText(getContext(), R.string.no_image_select, Toast.LENGTH_SHORT).show();
-        }
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+        });
     }
 
     private void successfulAnimation() {
@@ -250,19 +279,26 @@ public class ProfileFragment extends Fragment {
     private void alertDialogChoicer() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         String[] actions = {getString(R.string.open_photo), getString(R.string.change_photo),
-                getString(R.string.delete_photo)};
+                getString(R.string.take_photo), getString(R.string.delete_photo)};
         builder.setItems(actions, (dialog, which) -> {
-            switch (which) {
-                case 0: zoomImage(); break;
-                case 1: selectImageProfile(); break;
-                case 2: deleteImageProfile(); break;
+            if (which == 0) {
+                zoomAvatar();
+
+            } else if (which == 1) {
+
+                pickFromGallery();
+
+            } else if (which == 2) {
+                pickFromCamera();
+
+            } else if (which == 3) {
+                deleteAvatar();
             }
         });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        builder.create().show();
     }
 
-    private void zoomImage() {
+    private void zoomAvatar() {
         if (!isIcon) {
             byte[] arr = DataInteraction.convertDrawableToByteArr(((BitmapDrawable) imageProfile.
                     getDrawable()).getBitmap(), Constants.ORIGINAL);
@@ -272,7 +308,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    private void deleteImageProfile() {
+    private void deleteAvatar() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
                 .child("Users").child(firebaseUser.getUid());
 
@@ -286,128 +322,28 @@ public class ProfileFragment extends Fragment {
 //        startActivityForResult(intent, 2222);
     }
 
-        public static String compressImage(Context context, String imagePath) {
-
-            final float maxHeight = 1024.0f;
-            final float maxWidth = 1024.0f;
-
-            Bitmap scaledBitmap = null;
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            Bitmap bmp = BitmapFactory.decodeFile(imagePath, options);
-
-            int actualHeight = options.outHeight;
-            int actualWidth = options.outWidth;
-            float imgRatio = (float) actualWidth / (float) actualHeight;
-            float maxRatio = maxWidth / maxHeight;
-
-            if (actualHeight > maxHeight || actualWidth > maxWidth) {
-                if (imgRatio < maxRatio) {
-                    imgRatio = maxHeight / actualHeight;
-                    actualWidth = (int) (imgRatio * actualWidth);
-                    actualHeight = (int) maxHeight;
-                } else if (imgRatio > maxRatio) {
-                    imgRatio = maxWidth / actualWidth;
-                    actualHeight = (int) (imgRatio * actualHeight);
-                    actualWidth = (int) maxWidth;
-                } else {
-                    actualHeight = (int) maxHeight;
-                    actualWidth = (int) maxWidth;
-                }
-            }
-
-            options.inSampleSize = calculateInSampleSize(options, actualWidth, actualHeight);
-            options.inJustDecodeBounds = false;
-            options.inDither = false;
-            options.inPurgeable = true;
-            options.inInputShareable = true;
-            options.inTempStorage = new byte[16 * 1024];
-
-            try {
-                bmp = BitmapFactory.decodeFile(imagePath, options);
-            } catch (OutOfMemoryError exception) {
-                exception.printStackTrace();
-            } try {
-                scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.RGB_565);
-            } catch (OutOfMemoryError exception) {
-                exception.printStackTrace();
-            }
-
-            float ratioX = actualWidth / (float) options.outWidth;
-            float ratioY = actualHeight / (float) options.outHeight;
-            float middleX = actualWidth / 2.0f;
-            float middleY = actualHeight / 2.0f;
-
-            Matrix scaleMatrix = new Matrix();
-            scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
-            assert scaledBitmap != null;
-
-            Canvas canvas = new Canvas(scaledBitmap);
-            canvas.setMatrix(scaleMatrix);
-            canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2,
-                    middleY - bmp.getHeight() / 2,
-                    new Paint(Paint.FILTER_BITMAP_FLAG));
-            bmp.recycle();
-
-            ExifInterface exif;
-
-            try {
-                exif = new ExifInterface(imagePath);
-                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0);
-                Matrix matrix = new Matrix();
-                if (orientation == 6) {
-                    matrix.postRotate(90);
-                } else if (orientation == 3) {
-                    matrix.postRotate(180);
-                } else if (orientation == 8) {
-                    matrix.postRotate(270);
-                } scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
-                        scaledBitmap.getWidth(), scaledBitmap.getHeight(),
-                        matrix, true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            FileOutputStream out = null;
-            String filepath = getFilename(context);
-
-            try {
-                out = new FileOutputStream(filepath);
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            return filepath;
-        }
-
-        public static int calculateInSampleSize(BitmapFactory.
-                    Options options, int reqWidth, int reqHeight) {
-
-            final int height = options.outHeight;
-            final int width = options.outWidth;
-            int inSampleSize = 1;
-
-            if (height > reqHeight || width > reqWidth) {
-                final int heightRatio = Math.round((float) height / (float) reqHeight);
-                final int widthRatio = Math.round((float) width / (float) reqWidth);
-                inSampleSize = Math.min(heightRatio, widthRatio);
-            }
-
-            final float totalPixels = width * height;
-            final float totalReqPixelsCap = reqWidth * reqHeight * 2;
-
-            while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
-                inSampleSize++; }
-            return inSampleSize;
-        }
-
-        public static String getFilename(Context context) {
-            File mediaStorageDir = new File(Environment.getExternalStorageDirectory() + "/Android/data/" + context.getApplicationContext().getPackageName() + "/Files/Compressed");
-            if (!mediaStorageDir.exists()) {
-                mediaStorageDir.mkdirs();
-            }
-            String mImageName = "IMG_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-            return (mediaStorageDir.getAbsolutePath() + "/" + mImageName);
-        }
-
+    private boolean checkStoragePermission() {
+        return ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == (PackageManager.PERMISSION_GRANTED);
     }
+    private void requestStoragePermission() {
+        ActivityCompat.requestPermissions(getActivity(),
+                galleryPermissions, Constants.STORAGE_REQUEST_CODE);
+    }
+
+    private boolean checkCameraPermission() {
+        boolean flag1 = ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == (PackageManager.PERMISSION_GRANTED);
+        boolean flag2 = ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.CAMERA)
+                == (PackageManager.PERMISSION_GRANTED);
+
+        return flag1 && flag2;
+    }
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(getActivity(),
+                galleryPermissions, Constants.CAMERA_REQUEST_CODE);
+    }
+}

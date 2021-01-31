@@ -61,9 +61,6 @@ public class ChatsFragment extends Fragment {
     private FloatingActionButton fab;
     private TextInputLayout searchLayout;
     private EditText etSearch;
-    private View gotoProfile;
-    private ChipNavigationBar bottomNav;
-    private FragmentManager fragmentManager;
 
     private Animation changAnimIn;
     private Animation changAnimOut;
@@ -74,7 +71,6 @@ public class ChatsFragment extends Fragment {
 
     private FirebaseUser firebaseUser;
     private DatabaseReference messageRef;
-    private DatabaseReference userRef;
 
     DataPasser dataPasser;
 
@@ -89,8 +85,7 @@ public class ChatsFragment extends Fragment {
         fab = view.findViewById(R.id.fab);
         searchLayout = view.findViewById(R.id.til1);
         etSearch = view.findViewById(R.id.searchUsers);
-        gotoProfile = view.findViewById(R.id.clickableZone);
-        bottomNav = view.findViewById(R.id.bottomActionBar);
+        View gotoProfile = view.findViewById(R.id.clickableZone);
 
         ImageView userPhoto = view.findViewById(R.id.profile_image);
         TextView userName = view.findViewById(R.id.username);
@@ -114,7 +109,7 @@ public class ChatsFragment extends Fragment {
         gotoProfile.setOnClickListener(v -> passData(Constants.LINK_PROFILE));
 
         assert firebaseUser != null;
-        userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseUser.getUid());
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseUser.getUid());
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

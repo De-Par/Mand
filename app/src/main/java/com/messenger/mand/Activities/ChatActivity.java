@@ -35,6 +35,7 @@ import com.messenger.mand.Adapters.MessageAdapter;
 import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Interactions.DatabaseInteraction;
 import com.messenger.mand.Interactions.UserInteraction;
+import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.Objects.Message;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
@@ -47,7 +48,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private static final int RC_IMAGE = 3316;
     private MessageAdapter adapter;
     private final ArrayList<Message> messages = new ArrayList<>();
     private RecyclerView messagesRecyclerView;
@@ -124,6 +124,7 @@ public class ChatActivity extends AppCompatActivity {
 
         avatar.setOnClickListener(v -> profileActions());
         userName.setOnClickListener(v -> profileActions());
+
         sendImageButton.setOnClickListener(v -> gotoGallery());
 
         messageEditText.setFilters(new InputFilter[]
@@ -165,7 +166,7 @@ public class ChatActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_IMAGE && resultCode == RESULT_OK) {
+        if (requestCode == Constants.STORAGE_REQUEST_CODE && resultCode == RESULT_OK) {
             assert data != null;
             Uri selectedImageUri = data.getData();
             assert selectedImageUri != null;
@@ -306,7 +307,7 @@ public class ChatActivity extends AppCompatActivity {
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(i, RC_IMAGE);
+        startActivityForResult(i, Constants.STORAGE_REQUEST_CODE);
     }
 
     private void profileActions() {

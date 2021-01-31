@@ -2,22 +2,28 @@ package com.messenger.mand.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.messenger.mand.Interactions.LanguageContextWrapper;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.R;
 
+import java.util.Locale;
+
 public class StartActivity extends AppCompatActivity {
 
-    private Button login, register, exit;
+    private Button login, register;
+    private TextView exit;
     private Animation buttonAnimation;
     private byte stateButton = 0;
 
@@ -90,7 +96,7 @@ public class StartActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LanguageContextWrapper.wrap(newBase,"ru"));
+        super.attachBaseContext(LanguageContextWrapper.wrap(newBase, "ru"));
     }
 
     @Override

@@ -3,7 +3,6 @@
     <string name="yes">Да</string>
     <string name="ok">Хорошо</string>
     <string name="no">Отмена</string>
-    <string name="start_text">Welcome to Mand!</string>
     <string name="login">ВОЙТИ</string>
     <string name="register">СОЗДАТЬ</string>
     <string name="exit">Выход</string>
@@ -12,7 +11,11 @@
     <string name="password">Пароль:</string>
     <string name="email">Email:</string>
     <string name="phone">Телефон:</string>
+    <string name="about_yourself">Немного о себе:</string>
+    <string name="sex">Пол:</string>
     <string name="dateBirth">Дата рождения:</string>
+    <string name="general">Общее</string>
+    <string name="additional">Дополнительно</string>
     <string name="confirm_password">Подтвердите пароль:</string>
     <string name="nickname">Имя:</string>
     <string name="greeting">Здравствуйте</string>
@@ -59,7 +62,7 @@
     <string name="Seen">Просмотрено</string>
     <string name="Delivered">Доставлено</string>
     <string name="addInf">Дополнительная информация:</string>
-    <string name="dateCR">Дата создания:</string>
+    <string name="dateCR">Дата регистрации:</string>
     <string name="forgotPassword">Забыли пароль?</string>
     <string name="reset">Сброс</string>
     <string name="title_reset">Введите ваш Email для сброса пароля:</string>
@@ -72,10 +75,23 @@
     <string name="open_photo">Открыть фотографию</string>
     <string name="change_photo">Изменить фотографию</string>
     <string name="delete_photo">Удалить фотографию</string>
+    <string name="take_photo">Сделать фотографию</string>
     <string name="cancel">Отмена</string>
     <string name="back">Назад</string>
     <string name="at">в</string>
     <string name="sign_google">Войти через Google</string>
     <string name="online">online</string>
     <string name="lastSeen">Был(а) в сети</string>
+    <string name="no_info">...</string>
+
+    <string-array name="system_language">
+        <item>Русский</item>
+        <item>Английский</item>
+    </string-array>
+
+    <string-array name="system_language_alias">
+        <item>"ru"</item>
+        <item>"en"</item>
+    </string-array>
+
 </resources>

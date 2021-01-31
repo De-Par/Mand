@@ -1,7 +1,11 @@
 package com.messenger.mand.Activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -14,23 +18,15 @@ import androidx.preference.PreferenceManager;
 import com.messenger.mand.Fragments.SettingsFragment;
 import com.messenger.mand.Interactions.DatabaseInteraction;
 import com.messenger.mand.Interactions.DataInteraction;
+import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.R;
+
+import java.util.Locale;
 import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private SharedPreferences preferences;
-
-    SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs, key) -> {
-        if (key.equals("theme")) {
-            boolean isNight = prefs.getBoolean("theme", false);
-            if (isNight) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +46,26 @@ public class SettingsActivity extends AppCompatActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     }
 
+    SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs, key) -> {
+        if (key.equals("theme")) {
+            boolean isNight = prefs.getBoolean("theme", false);
+            if (isNight) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+        } else if (key.equals("language_preference")) {
+            String lang = prefs.getString("language_preference", "ru");
+            setLocale(lang);
+        }
+    };
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            NavUtils.navigateUpFromSameTask(this);
+            Intent intent = new Intent(SettingsActivity.this, NavigationActivity.class);
+            intent.putExtra("Nav_link", Constants.LINK_PROFILE);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -76,5 +88,17 @@ public class SettingsActivity extends AppCompatActivity {
         preferences.unregisterOnSharedPreferenceChangeListener(listener);
         DatabaseInteraction.pushUserStatus(DataInteraction.getTimeNow());
         super.onPause();
+    }
+
+    public void setLocale(String lang) {
+        Locale myLocale = new Locale(lang);
+        Resources res = getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = myLocale;
+        res.updateConfiguration(conf, dm);
+        Intent refresh = new Intent(this, SettingsActivity.class);
+        finish();
+        startActivity(refresh);
     }
 }

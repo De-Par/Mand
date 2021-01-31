@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,8 +18,6 @@ import com.messenger.mand.R;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
-    Animation topAnim;
-    Animation bottomAnim;
     ImageView imageView;
     TextView textView;
 
@@ -30,19 +30,16 @@ public class SplashScreenActivity extends AppCompatActivity {
         textView = findViewById(R.id.startTextLabel);
         imageView = findViewById(R.id.startSplashLabel);
 
-        topAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_splash_image);
-        bottomAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_splash_text);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
+        anim.setStartOffset(0);
+        anim.setDuration(Constants.SPLASH_DELAY);
 
-        imageView.startAnimation(topAnim);
-        textView.startAnimation(bottomAnim);
+        imageView.startAnimation(anim);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(SplashScreenActivity.this, StartActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        }, Constants.SPLASH_DELAY);
+        new Handler().postDelayed(() -> {
+            Intent intent = new Intent(SplashScreenActivity.this, StartActivity.class);
+            startActivity(intent);
+            finish();
+        }, Constants.SPLASH_DELAY + 100);
     }
 }

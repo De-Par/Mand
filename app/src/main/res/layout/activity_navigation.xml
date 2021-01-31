@@ -30,7 +30,7 @@
         android:layout_height="54dp"
         android:layout_gravity="bottom"
         android:focusedByDefault="true"
-        android:background="@drawable/rounded_bar"
+        android:background="@color/white_overlay"
         app:cnb_unselectedColor="@color/black"
         app:cnb_menuResource="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"/>
