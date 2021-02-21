@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,16 +38,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.messenger.mand.Adapters.ChatAdapter;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.Interfaces.DataPasser;
-import com.messenger.mand.Objects.Constants;
+import static com.messenger.mand.Values.Navigation.*;
+
+import com.messenger.mand.Objects.Chat;
 import com.messenger.mand.Objects.Message;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ChatsFragment extends Fragment {
 
@@ -70,8 +71,6 @@ public class ChatsFragment extends Fragment {
     private boolean search = false;
 
     private FirebaseUser firebaseUser;
-    private DatabaseReference messageRef;
-
     DataPasser dataPasser;
 
     @Override
@@ -91,8 +90,8 @@ public class ChatsFragment extends Fragment {
         TextView userName = view.findViewById(R.id.username);
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("");
 
         changAnimIn = AnimationUtils.loadAnimation(getContext(), R.anim.anim_scale_decrease);
         changAnimOut = AnimationUtils.loadAnimation(getContext(), R.anim.anim_scale_increase);
@@ -106,10 +105,11 @@ public class ChatsFragment extends Fragment {
         usersList = new ArrayList<>();
         mUsers = new ArrayList<>();
 
-        gotoProfile.setOnClickListener(v -> passData(Constants.LINK_PROFILE));
+        gotoProfile.setOnClickListener(v -> passData(LINK_PROFILE));
 
         assert firebaseUser != null;
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseUser.getUid());
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").
+                child(firebaseUser.getUid());
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -133,20 +133,20 @@ public class ChatsFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
 
-        messageRef = FirebaseDatabase.getInstance().getReference().child("Messages");
-        messageRef.addValueEventListener(new ValueEventListener() {
+        DatabaseReference chatsRef = FirebaseDatabase.getInstance().getReference().child("ChatsList");
+        chatsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usersList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Message message = snapshot.getValue(Message.class);
+                    Chat chat = snapshot.getValue(Chat.class);
 
-                    assert message != null;
-                    if (message.getSender().equals(firebaseUser.getUid())) {
-                        usersList.add(message.getRecipient());
+                    assert chat != null;
+                    if (chat.getRecipient().equals(firebaseUser.getUid())) {
+                        usersList.add(chat.getInitiator());
                     }
-                    if (message.getRecipient().equals(firebaseUser.getUid())) {
-                        usersList.add(message.getSender());
+                    if (chat.getInitiator().equals(firebaseUser.getUid())) {
+                        usersList.add(chat.getRecipient());
                     }
                 }
                 readChats();
@@ -231,8 +231,8 @@ public class ChatsFragment extends Fragment {
     }
 
     private void readChats() {
-        messageRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        messageRef.addValueEventListener(new ValueEventListener() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users");
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mUsers.clear();
