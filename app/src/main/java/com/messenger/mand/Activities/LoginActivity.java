@@ -1,12 +1,10 @@
 package com.messenger.mand.Activities;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -23,8 +21,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +29,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Interactions.UserInteraction;
-import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.R;
 import com.shobhitpuri.custombuttons.GoogleSignInButton;
 
@@ -63,7 +58,6 @@ public class LoginActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //before auth!
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -103,8 +97,8 @@ public class LoginActivity extends AppCompatActivity {
             loginButton.startAnimation(btnAnim);
             UserInteraction.hideKeyboard(LoginActivity.this);
 
-            String txt_email = UserInteraction.getTrLn(email);
-            String txt_password = UserInteraction.getTrLn(password);
+            String txt_email = UserInteraction.getTrimLen(email);
+            String txt_password = UserInteraction.getTrimLen(password);
 
             if (TextUtils.isEmpty(txt_email) || TextUtils.isEmpty(txt_password)) {
                 UserInteraction.showPopUpSnackBar(getString(R.string.input_fields), v, getApplicationContext());
@@ -128,8 +122,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            assert result != null;
             if (result.isSuccess()) {
                 GoogleSignInAccount account = result.getSignInAccount();
+                assert account != null;
                 firebaseAuthWithGoogle(account.getIdToken());
             }
         }
@@ -186,6 +182,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
+                        assert user != null;
                         String id = user.getUid();
                         DatabaseReference reference = FirebaseDatabase.getInstance().
                                 getReference().child("Users").child(id);

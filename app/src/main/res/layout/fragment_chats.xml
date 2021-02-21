@@ -54,6 +54,16 @@
 
             </LinearLayout>
 
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/searchAnimation"
+                android:forceDarkAllowed="false"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                app:lottie_loop="true"
+                app:lottie_autoPlay="true"
+                app:lottie_rawRes="@raw/search_anim" />
+
         </androidx.appcompat.widget.Toolbar>
 
         <com.airbnb.lottie.LottieAnimationView

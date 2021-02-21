@@ -1,11 +1,12 @@
 package com.messenger.mand.Fragments;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +24,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,13 +42,16 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.messenger.mand.Activities.NavigationActivity;
 import com.messenger.mand.Adapters.UserAdapter;
+import com.messenger.mand.Interactions.DataInteraction;
+import com.messenger.mand.Interactions.DatabaseInteraction;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.Interfaces.DataPasser;
-import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.Objects.User;
+import static com.messenger.mand.Values.Navigation.*;
 import com.messenger.mand.R;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class UsersFragment extends Fragment {
 
@@ -83,8 +87,8 @@ public class UsersFragment extends Fragment {
         TextView userName = view.findViewById(R.id.username);
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("");
 
         changAnimIn = AnimationUtils.loadAnimation(getContext(), R.anim.anim_scale_decrease);
         changAnimOut = AnimationUtils.loadAnimation(getContext(), R.anim.anim_scale_increase);
@@ -99,7 +103,7 @@ public class UsersFragment extends Fragment {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         readUsers();
 
-        gotoProfile.setOnClickListener(v -> passData(Constants.LINK_PROFILE));
+        gotoProfile.setOnClickListener(v -> passData(LINK_PROFILE));
 
         changAnimIn.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -248,7 +252,6 @@ public class UsersFragment extends Fragment {
                 getInstance().getReference().child("Users");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if ((etSearch.getText().toString().trim().equals("") || !search) && isAdded()) {

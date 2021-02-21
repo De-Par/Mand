@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -35,7 +36,8 @@ import com.messenger.mand.Adapters.MessageAdapter;
 import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Interactions.DatabaseInteraction;
 import com.messenger.mand.Interactions.UserInteraction;
-import com.messenger.mand.Objects.Constants;
+import static com.messenger.mand.Interactions.EncryptDecryptString.*;
+import static com.messenger.mand.Values.Sensor.*;
 import com.messenger.mand.Objects.Message;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
@@ -43,6 +45,9 @@ import com.messenger.mand.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -113,9 +118,22 @@ public class ChatActivity extends AppCompatActivity {
         messagesRecyclerView.setLayoutManager(linearLayoutManager);
 
         sendMessageButton.setOnClickListener(v -> {
-            if (!UserInteraction.getTrLn(messageEditText).equals("")) {
-                sendMessageToDB(firebaseUser.getUid(), recipientUserId,
-                        UserInteraction.getTrLn(messageEditText), "", DataInteraction.getTimeNow());
+            if (!UserInteraction.getTrimLen(messageEditText).equals("")) {
+
+//                try {
+//                    Cipher cipher = Cipher.getInstance("AES");
+//                    byte[] encryptedData = encryptString(UserInteraction.getTrimLen(messageEditText), cipher);
+//                    String mes = new String(encryptedData);
+//                    sendMessageToDB(firebaseUser.getUid(), recipientUserId, mes,
+//                            "", DataInteraction.getTimeNow());
+//
+//                } catch (Exception e) {
+//                    Log.e("TAG", e.getLocalizedMessage());
+//                }
+
+                sendMessageToDB(firebaseUser.getUid(), recipientUserId, UserInteraction.getTrimLen(messageEditText),
+                        "", DataInteraction.getTimeNow());
+
             } else {
                 Toast.makeText(ChatActivity.this, getString(R.string.null_message),
                         Toast.LENGTH_SHORT).show();
@@ -147,7 +165,6 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 statusUser.setText(status);
 
-
                 if (user.getAvatar().equals("default")) {
                     avatar.setImageResource(R.drawable.profile_image_default);
                 } else {
@@ -166,7 +183,7 @@ public class ChatActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == Constants.STORAGE_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == STORAGE_REQUEST_CODE && resultCode == RESULT_OK) {
             assert data != null;
             Uri selectedImageUri = data.getData();
             assert selectedImageUri != null;
@@ -244,6 +261,7 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 adapter = new MessageAdapter(ChatActivity.this, messages);
                 adapter.notifyDataSetChanged();
+
                 messagesRecyclerView.setAdapter(adapter);
             }
             @Override
@@ -287,7 +305,6 @@ public class ChatActivity extends AppCompatActivity {
 
         messagesReference.push().setValue(messageMap);
         messageEditText.setText("");
-        sendListOfChatsToDataBase();
     }
 
     private void sendListOfChatsToDataBase() {
@@ -296,7 +313,6 @@ public class ChatActivity extends AppCompatActivity {
 
         HashMap<String, Object> chatsMap = new HashMap<>();
         chatsMap.put("initiator", firebaseUser.getUid());
-        chatsMap.put("initiator_draft", "");
         chatsMap.put("recipient", recipientUserId);
         chatsMap.put("recipient_draft", "");
 
@@ -307,7 +323,7 @@ public class ChatActivity extends AppCompatActivity {
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(i, Constants.STORAGE_REQUEST_CODE);
+        startActivityForResult(i, STORAGE_REQUEST_CODE);
     }
 
     private void profileActions() {

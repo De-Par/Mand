@@ -3,6 +3,7 @@ package com.messenger.mand.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,12 +19,18 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.messenger.mand.Activities.ZoomViewActivity;
-import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Objects.Message;
+
+import static com.messenger.mand.Interactions.EncryptDecryptString.decryptString;
+import static com.messenger.mand.Interactions.EncryptDecryptString.generateKey;
+import static com.messenger.mand.Values.Sensor.*;
 import com.messenger.mand.R;
 
 import java.util.List;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
@@ -56,6 +63,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.messageTextView.setVisibility(View.VISIBLE);
             holder.photoImageView.setVisibility(View.GONE);
 
+//            try {
+//                SecretKey myKey = generateKey("AES");
+//                Cipher cipher = Cipher.getInstance("AES");
+//                String decryptedData = decryptString(message.getText().getBytes(),
+//                        myKey, cipher);
+//
+//                message.setText(decryptedData);
+//
+//            } catch (Exception e) {
+//                Log.e("TAG", e.getLocalizedMessage());
+//            }
+
             if (message.getText().trim().length() > 30) {
                 holder.layoutMess.setOrientation(LinearLayout.VERTICAL);
                 holder.infMess.setPadding(0,20,3,0);
@@ -84,9 +103,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.txt_img.setImageResource(R.drawable.ic_seen);
         }
 
-        holder.photoImageView.setOnClickListener(v -> {
-            zoomImage(holder);
-        });
+        holder.photoImageView.setOnClickListener(v -> zoomImage(holder));
     }
 
     @Override
@@ -130,7 +147,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     private void zoomImage(ViewHolder holder) {
         byte[] arr = DataInteraction.convertDrawableToByteArr(((BitmapDrawable) holder.photoImageView.
-                getDrawable()).getBitmap(), Constants.ORIGINAL);
+                getDrawable()).getBitmap(), ORIGINAL);
         context.startActivity(new Intent(context, ZoomViewActivity.class).putExtra("photo", arr));
     }
 }

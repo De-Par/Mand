@@ -12,13 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NavUtils;
 import androidx.preference.PreferenceManager;
 
 import com.messenger.mand.Fragments.SettingsFragment;
 import com.messenger.mand.Interactions.DatabaseInteraction;
 import com.messenger.mand.Interactions.DataInteraction;
-import com.messenger.mand.Objects.Constants;
+import static com.messenger.mand.Values.Navigation.*;
 import com.messenger.mand.R;
 
 import java.util.Locale;
@@ -64,7 +63,7 @@ public class SettingsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(SettingsActivity.this, NavigationActivity.class);
-            intent.putExtra("Nav_link", Constants.LINK_PROFILE);
+            intent.putExtra("Nav_link", LINK_PROFILE);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

@@ -6,15 +6,13 @@ import android.os.Handler;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.messenger.mand.Objects.Constants;
 import com.messenger.mand.R;
+import static com.messenger.mand.Values.Animation.*;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -32,7 +30,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
         anim.setStartOffset(0);
-        anim.setDuration(Constants.SPLASH_DELAY);
+        anim.setDuration(SPLASH_DELAY);
 
         imageView.startAnimation(anim);
 
@@ -40,6 +38,6 @@ public class SplashScreenActivity extends AppCompatActivity {
             Intent intent = new Intent(SplashScreenActivity.this, StartActivity.class);
             startActivity(intent);
             finish();
-        }, Constants.SPLASH_DELAY + 100);
+        }, SPLASH_DELAY + 100);
     }
 }

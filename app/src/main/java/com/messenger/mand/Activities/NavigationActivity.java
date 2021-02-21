@@ -1,16 +1,11 @@
 package com.messenger.mand.Activities;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,12 +28,9 @@ import com.messenger.mand.Fragments.ProfileFragment;
 import com.messenger.mand.Fragments.UsersFragment;
 import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Interactions.DatabaseInteraction;
-import com.messenger.mand.Interactions.LanguageContextWrapper;
 import com.messenger.mand.Interfaces.DataPasser;
-import com.messenger.mand.Objects.Constants;
+import static com.messenger.mand.Values.Navigation.*;
 import com.messenger.mand.R;
-
-import java.util.Locale;
 
 public class NavigationActivity extends AppCompatActivity implements DataPasser {
 
@@ -140,10 +132,10 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
     @Override
     public void onDataPass(String data) {
         switch (data) {
-            case Constants.LINK_PROFILE:
+            case LINK_PROFILE:
                 bottomNav.setItemSelected(R.id.navigation_profile, true);
                 break;
-            case Constants.LINK_USERS:
+            case LINK_USERS:
                 bottomNav.setItemSelected(R.id.navigation_users, true);
                 break;
             default: bottomNav.setItemSelected(R.id.navigation_chats, true);

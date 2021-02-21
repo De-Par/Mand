@@ -45,7 +45,7 @@ public class UserInteraction {
                 activeNetwork.isConnectedOrConnecting();
     }
 
-    public static String getTrLn(EditText et) {
+    public static String getTrimLen(EditText et) {
         return et.getText().toString().trim();
     }
 }

@@ -59,14 +59,11 @@ public class RegisterActivity extends AppCompatActivity {
         name = findViewById(R.id.nameEditText);
         RegisterButton = findViewById(R.id.SignUpButton);
 
-        password.setFilters(new InputFilter[]{new InputFilter() {
-            @Override
-            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                Pattern pattern = Pattern.compile("^[a-zA-Z0-9]+$");
-                Matcher matcher = pattern.matcher(source);
-                if (!matcher.matches()) return "";
-                return null;
-            }
+        password.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
+            Pattern pattern = Pattern.compile("^[a-zA-Z0-9]+$");
+            Matcher matcher = pattern.matcher(source);
+            if (!matcher.matches()) return "";
+            return null;
         }});
 
         repeatPassword.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
