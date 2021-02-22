@@ -16,13 +16,13 @@
         app:layout_constraintTop_toTopOf="parent"
         android:padding="16dp">
 
-        <View
+        <TextView
             android:id="@+id/closeDialog"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:background="@drawable/ic_close"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:backgroundTint="@color/black" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -31,7 +31,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/closeDialog"
+            app:layout_constraintBottom_toBottomOf="@+id/closeDialog"
             android:textStyle="bold"
             android:textSize="20sp"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
@@ -50,14 +51,24 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <View
+            android:id="@+id/roundedBackground"
+            android:layout_width="175dp"
+            android:layout_height="175dp"
+            android:background="@drawable/dialog_background"
+            android:forceDarkAllowed="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textMessage"/>
+
+        <View
             android:id="@+id/imgCreateChat"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textMessage"
+            app:layout_constraintTop_toTopOf="@+id/roundedBackground"
+            app:layout_constraintBottom_toBottomOf="@+id/roundedBackground"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/img_create_chat"/>
+            android:layout_margin="8dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonCreateChat"
@@ -73,7 +84,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imgCreateChat"/>
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

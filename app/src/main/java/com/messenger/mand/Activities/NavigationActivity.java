@@ -1,7 +1,6 @@
 package com.messenger.mand.Activities;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
@@ -42,10 +41,9 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
-
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
         boolean isNight = preferences.getBoolean("theme", false);
+
         if (isNight) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
@@ -78,7 +76,7 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
         });
     }
 
-//    @Override
+    //    @Override
 //    protected void attachBaseContext(Context newBase) {
 //        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 //        String lang = preferences.getString("language_preference", "ru");
@@ -95,8 +93,6 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
             gotoSettingActivity();
         } else if (id == R.id.item_exit) {
             dialogWindowBackPressed();
-        } else if (id == R.id.menu_icon_edit) {
-            showEditDialog();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -105,7 +101,7 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
     protected void onStart() {
         isExit = false;
         checkUserStatus();
-        DatabaseInteraction.pushUserStatus(getString(R.string.online));
+        DatabaseInteraction.pushUserStatus("online");
         DataInteraction.deleteCache(getApplicationContext());
         super.onStart();
     }
@@ -113,7 +109,7 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
     @Override
     protected void onResume() {
         isExit = false;
-        DatabaseInteraction.pushUserStatus(getString(R.string.online));
+        DatabaseInteraction.pushUserStatus("online");
         super.onResume();
     }
 
@@ -131,14 +127,25 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
 
     @Override
     public void onDataPass(String data) {
-        switch (data) {
-            case LINK_PROFILE:
-                bottomNav.setItemSelected(R.id.navigation_profile, true);
-                break;
-            case LINK_USERS:
-                bottomNav.setItemSelected(R.id.navigation_users, true);
-                break;
-            default: bottomNav.setItemSelected(R.id.navigation_chats, true);
+        changeViewPosition(data);
+    }
+
+    private void changeViewPosition(String data) {
+        Fragment fragment;
+        if (data.equals(LINK_USERS)) {
+            fragment = new UsersFragment();
+            bottomNav.setItemSelected(R.id.navigation_users, true);
+        } else if (data.equals(LINK_PROFILE)) {
+            fragment = new ProfileFragment();
+            bottomNav.setItemSelected(R.id.navigation_profile, true);
+        } else  {
+            fragment = new ChatsFragment();
+            bottomNav.setItemSelected(R.id.navigation_chats, true);
+        }
+
+        if (fragment != null) {
+            fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit();
         }
     }
 
@@ -157,7 +164,7 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
     private void checkUserStatus() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            exitIntentActivity();
+            signOutFromApp();
         }
     }
 
@@ -168,30 +175,10 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
         startActivity(intentSettings);
     }
 
-    private void showEditDialog() {
-        String[] options = {"Edit name", "Edit phone", "About you"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(getApplication());
-        builder.setTitle("Title");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (i == 0) {
-
-                } else if (i == 1) {
-
-                } else if (i == 2) {
-
-                } else if (i == 3) {
-
-                }
-            }
-        });
-        builder.create().show();
-    }
-
     private void dialogWindowBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(NavigationActivity.this, R.style.AlertDialogTheme);
-        View view = LayoutInflater.from(NavigationActivity.this).inflate(R.layout.warning_dialog, findViewById(R.id.layoutDialogContainer));
+        View view = LayoutInflater.from(NavigationActivity.this).inflate(R.layout.warning_dialog,
+                findViewById(R.id.layoutDialogContainer));
         builder.setView(view);
         ((TextView) view.findViewById(R.id.textTitle)).setText(getResources().getString(R.string.logout));
         ((TextView) view.findViewById(R.id.textMessage)).setText(getResources().getString(R.string.logout_text));
@@ -206,7 +193,7 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
         view.findViewById(R.id.buttonYes).setOnClickListener(v -> {
             isExit = true;
             DatabaseInteraction.pushUserStatus(DataInteraction.getTimeNow());
-            exitIntentActivity();
+            signOutFromApp();
         });
         if (alertDialog.getWindow() != null) {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
@@ -214,7 +201,7 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
         alertDialog.show();
     }
 
-    private void exitIntentActivity() {
+    private void signOutFromApp() {
         FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(NavigationActivity.this,
                 StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |

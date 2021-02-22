@@ -54,16 +54,6 @@
 
             </LinearLayout>
 
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/searchAnimation"
-                android:forceDarkAllowed="false"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_gravity="end"
-                app:lottie_loop="true"
-                app:lottie_autoPlay="true"
-                app:lottie_rawRes="@raw/search_anim" />
-
         </androidx.appcompat.widget.Toolbar>
 
         <com.airbnb.lottie.LottieAnimationView
@@ -75,6 +65,7 @@
             app:lottie_rawRes="@raw/anim_oops_smth_lost"
             android:layout_width="wrap_content"
             android:layout_height="350dp"
+            android:forceDarkAllowed="false"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"/>
 
@@ -115,7 +106,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:fastScrollEnabled="true"
-            android:scrollbarSize="5dp"
+            android:scrollbarSize="2dp"
             android:verticalScrollbarPosition="right"
             android:scrollbarStyle="insideInset"
             android:isScrollContainer="true"
@@ -123,7 +114,7 @@
             android:smoothScrollbar="true"
             android:scrollIndicators="right"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
-            android:paddingTop="14dp"/>
+            android:padding="16dp"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

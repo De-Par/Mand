@@ -72,11 +72,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         if (user.getStatus().equals("online")) {
             status = context.getString(R.string.online);
             userViewHolder.statusOnline.setTextColor(context.getResources().
-                    getColor(R.color.green, context.getTheme()));
+                    getColor(R.color.greenBright, context.getTheme()));
         } else {
-            status = context.getString(R.string.lastSeen) + " " + user.getStatus();
-            userViewHolder.statusOnline.setTextColor(context.getResources().
-                    getColor(R.color.black_overlay, context.getTheme()));
+            String[] date = user.getStatus().split(", ");
+            status = context.getString(R.string.lastSeen) + " " + date[1] + " " +
+                    context.getString(R.string.at) + " " + date[2];
         }
         userViewHolder.statusOnline.setText(status);
         userViewHolder.itemView.setOnClickListener(v -> isChatCreated(v, user));

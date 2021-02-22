@@ -1,7 +1,9 @@
 package com.messenger.mand.Activities;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,13 +34,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.messenger.mand.Adapters.MessageAdapter;
 import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Interactions.DatabaseInteraction;
 import com.messenger.mand.Interactions.UserInteraction;
-import static com.messenger.mand.Interactions.EncryptDecryptString.*;
 import static com.messenger.mand.Values.Sensor.*;
+
 import com.messenger.mand.Objects.Message;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
@@ -45,9 +47,6 @@ import com.messenger.mand.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -71,6 +70,7 @@ public class ChatActivity extends AppCompatActivity {
     private StorageReference chatImagesStorageReference;
     private String recipientUserId;
     String recipientUserName;
+    String[] galleryPermissions;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -100,6 +100,8 @@ public class ChatActivity extends AppCompatActivity {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         storage = FirebaseStorage.getInstance();
 
+        galleryPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
         messagesReference = database.getReference().child("Messages");
         useReference = database.getReference().child("Users").child(recipientUserId);
         chatImagesStorageReference = storage.getReference().child("Chat_images");
@@ -119,8 +121,7 @@ public class ChatActivity extends AppCompatActivity {
 
         sendMessageButton.setOnClickListener(v -> {
             if (!UserInteraction.getTrimLen(messageEditText).equals("")) {
-
-//                try {
+                //                try {
 //                    Cipher cipher = Cipher.getInstance("AES");
 //                    byte[] encryptedData = encryptString(UserInteraction.getTrimLen(messageEditText), cipher);
 //                    String mes = new String(encryptedData);
@@ -130,23 +131,26 @@ public class ChatActivity extends AppCompatActivity {
 //                } catch (Exception e) {
 //                    Log.e("TAG", e.getLocalizedMessage());
 //                }
-
                 sendMessageToDB(firebaseUser.getUid(), recipientUserId, UserInteraction.getTrimLen(messageEditText),
                         "", DataInteraction.getTimeNow());
-
             } else {
                 Toast.makeText(ChatActivity.this, getString(R.string.null_message),
                         Toast.LENGTH_SHORT).show();
             }
         });
 
-        avatar.setOnClickListener(v -> profileActions());
-        userName.setOnClickListener(v -> profileActions());
-
-        sendImageButton.setOnClickListener(v -> gotoGallery());
+        avatar.setOnClickListener(v -> profilePreview());
+        userName.setOnClickListener(v -> profilePreview());
+        sendImageButton.setOnClickListener(v -> {
+            if (!checkStoragePermission()) {
+                requestStoragePermission();
+            } else {
+                pickFromGallery();
+            }
+        });
 
         messageEditText.setFilters(new InputFilter[]
-                {new InputFilter.LengthFilter(600)});
+                {new InputFilter.LengthFilter(700)});
 
         useReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -154,21 +158,24 @@ public class ChatActivity extends AppCompatActivity {
                 User user = dataSnapshot.getValue(User.class);
                 String status;
                 assert user != null;
-
                 userName.setText(user.getName());
-                if (!user.getStatus().equals(getString(R.string.online))) {
-                    status = getString(R.string.lastSeen) + " " + user.getStatus();
-                    statusUser.setTextColor(getResources().getColor(R.color.white_dark, getTheme()));
+
+                if (!user.getStatus().equals("online")) {
+                    String[] date = user.getStatus().split(", ");
+                    status = getString(R.string.lastSeen) + " " + date[1] + " " + getString(R.string.at) + " " + date[2];
                 } else {
-                    status = user.getStatus();
-                    statusUser.setTextColor(getResources().getColor(R.color.green, getTheme()));
+                    status = getString(R.string.online);
                 }
                 statusUser.setText(status);
 
                 if (user.getAvatar().equals("default")) {
                     avatar.setImageResource(R.drawable.profile_image_default);
                 } else {
-                    Glide.with(getApplicationContext()).load(user.getAvatar()).into(avatar);
+                    try {
+                        Glide.with(getApplicationContext()).load(user.getAvatar()).into(avatar);
+                    } catch (Exception e) {
+                        Log.e("AVATAR", e.getLocalizedMessage());
+                    }
                 }
             }
             @Override
@@ -182,51 +189,49 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == STORAGE_REQUEST_CODE && resultCode == RESULT_OK) {
-            assert data != null;
-            Uri selectedImageUri = data.getData();
-            assert selectedImageUri != null;
-            final StorageReference imageReference = chatImagesStorageReference
-                    .child(Objects.requireNonNull(selectedImageUri.getLastPathSegment()));
-
-            final Dialog progressDialog = new Dialog(ChatActivity.this);
-            progressDialog.setContentView(R.layout.progress_bar);
-            Objects.requireNonNull(progressDialog.getWindow()).
-                    setBackgroundDrawableResource(android.R.color.transparent);
-            progressDialog.show();
-
-            UploadTask uploadTask = imageReference.putFile(selectedImageUri);
-            Task<Uri> urlTask = uploadTask.continueWithTask(task -> {
-                if (!task.isSuccessful()) {
-                    throw Objects.requireNonNull(task.getException());
-                }
-                return imageReference.getDownloadUrl();
-            }).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-                    assert downloadUri != null;
-
-                    sendMessageToDB(firebaseUser.getUid(), recipientUserId, "",
-                            downloadUri.toString(), DataInteraction.getTimeNow());
-
-                    progressDialog.dismiss();
-                    Toast.makeText(ChatActivity.this, R.string.successful,
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (resultCode == RESULT_OK) {
+            if (requestCode == IMAGE_PICK_STORAGE_CODE) {
+                assert data != null;
+                Uri imageUri = data.getData();
+                uploadImageToChat(imageUri);
+            }
         }
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case STORAGE_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    boolean writeStorageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (writeStorageAccepted) {
+                        pickFromGallery();
+                    } else {
+                        UserInteraction.showPopUpSnackBar(getString(R.string.error_smth),
+                                getCurrentFocus(), getApplicationContext());
+                    }
+                }
+            }
+            break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(ChatActivity.this, NavigationActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
     protected void onStart() {
-        DatabaseInteraction.pushUserStatus(getString(R.string.online));
+        DatabaseInteraction.pushUserStatus("online");
         super.onStart();
     }
 
     @Override
     protected void onResume() {
-        DatabaseInteraction.pushUserStatus(getString(R.string.online));
+        DatabaseInteraction.pushUserStatus("online");
         super.onResume();
     }
 
@@ -241,7 +246,6 @@ public class ChatActivity extends AppCompatActivity {
         messages.clear();
         messagesReference = database.getReference().child("Messages");
         messagesReference.addValueEventListener(new ValueEventListener() {
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!messages.isEmpty()) messages.clear();
@@ -291,6 +295,33 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    private void uploadImageToChat(Uri uri) {
+        final Dialog progressDialog = new Dialog(ChatActivity.this);
+        progressDialog.setContentView(R.layout.progress_bar);
+        Objects.requireNonNull(progressDialog.getWindow()).
+                setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.show();
+
+        String[] pathFileName = uri.getPath().split("/");
+        final StorageReference fileReference = chatImagesStorageReference.child(pathFileName[pathFileName.length - 1]);
+        fileReference.child(pathFileName[1]).putFile(uri).addOnSuccessListener(taskSnapshot -> {
+            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+            while (!uriTask.isSuccessful());
+            Uri downloadUri = uriTask.getResult();
+
+            if (uriTask.isSuccessful()) {
+                sendMessageToDB(firebaseUser.getUid(), recipientUserId, "",
+                        downloadUri.toString(), DataInteraction.getTimeNow());
+            } else {
+                Toast.makeText(ChatActivity.this, R.string.error_smth, Toast.LENGTH_SHORT).show();
+            }
+            progressDialog.dismiss();
+        }).addOnFailureListener(e -> {
+            Toast.makeText(ChatActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+        });
+    }
+
     private void sendMessageToDB(final String sender, final String receiver, final String message,
                                  final String URI, final String time) {
         messagesReference = database.getReference().child("Messages");
@@ -307,26 +338,24 @@ public class ChatActivity extends AppCompatActivity {
         messageEditText.setText("");
     }
 
-    private void sendListOfChatsToDataBase() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().
-                child("ChatsList").child(recipientUserId);
-
-        HashMap<String, Object> chatsMap = new HashMap<>();
-        chatsMap.put("initiator", firebaseUser.getUid());
-        chatsMap.put("recipient", recipientUserId);
-        chatsMap.put("recipient_draft", "");
-
-        databaseReference.updateChildren(chatsMap);
+    private void pickFromGallery() {
+        Intent galleryIntent = new Intent();
+        galleryIntent.setAction(Intent.ACTION_PICK);
+        galleryIntent.setType("image/*");
+        startActivityForResult(galleryIntent, IMAGE_PICK_STORAGE_CODE);
     }
 
-    private void gotoGallery() {
-        Intent i = new Intent();
-        i.setType("image/*");
-        i.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(i, STORAGE_REQUEST_CODE);
+    private boolean checkStoragePermission() {
+        return ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == (PackageManager.PERMISSION_GRANTED);
     }
 
-    private void profileActions() {
+    private void requestStoragePermission() {
+        requestPermissions(galleryPermissions, STORAGE_REQUEST_CODE);
+    }
 
+    private void profilePreview() {
+        //
     }
 }

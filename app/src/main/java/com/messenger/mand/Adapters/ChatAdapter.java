@@ -2,6 +2,7 @@ package com.messenger.mand.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +52,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
         userViewHolder.user_name.setText(user.getName());
 
         if (user.getAvatar().equals("default")) {
-            userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
+            try {
+                userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
+            } catch (Exception e) {
+                Log.e("AVATAR", e.getLocalizedMessage());
+            }
         } else {
             Glide.with(context).load(user.getAvatar()).into(userViewHolder.avatar);
         }
@@ -80,7 +85,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
     static class UserViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView avatar;
-        private final ImageView onlineIndication;
+        private final View onlineIndication;
         private final TextView user_name;
         private final TextView last_message;
 
@@ -139,8 +144,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
     private String defineMessageType(Message message) {
         if (message.getText().trim().length() != 0) {
             return message.getText().trim();
+        } else if (message == null) {
+            return context.getString(R.string.no_info);
+        } else {
+            return context.getString(R.string.photo);
         }
-        return context.getString(R.string.photo);
     }
 
     private String abbreviateLongMessage(String text) {

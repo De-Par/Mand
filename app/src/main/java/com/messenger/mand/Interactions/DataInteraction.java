@@ -1,9 +1,9 @@
 package com.messenger.mand.Interactions;
 
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.DateFormat;
@@ -14,7 +14,7 @@ import java.util.Objects;
 public class DataInteraction {
 
     public static String getTimeNow() {
-        String pattern = "yyyy, d MMM 'at' HH:mm";
+        String pattern = "yyyy',' d MMM',' HH:mm";
         java.util.Date currentDate = new java.util.Date();
         DateFormat timeFormat = new SimpleDateFormat(pattern, Locale.ENGLISH);
         return timeFormat.format(currentDate);

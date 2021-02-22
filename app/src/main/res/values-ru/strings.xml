@@ -58,7 +58,7 @@
     <string name="search">Поиск</string>
     <string name="noUsers">Странно, но новых пользователей не обнаружено…</string>
     <string name="noChats">Хмм… За последнее время вы ни с кем не создавали чат. Начните новую беседу во вкладке \"Люди\"!</string>
-    <string name="noSearch">Пользователя с данным именем отсутствует в базе данных.</string>
+    <string name="noSearch">Пользователь с данным именем отсутствует в базе данных.</string>
     <string name="Seen">Просмотрено</string>
     <string name="Delivered">Доставлено</string>
     <string name="addInf">Дополнительная информация:</string>
@@ -79,8 +79,9 @@
     <string name="cancel">Отмена</string>
     <string name="back">Назад</string>
     <string name="at">в</string>
+    <string name="id">ID:</string>
     <string name="sign_google">Войти через Google</string>
-    <string name="online">online</string>
+    <string name="online">В сети</string>
     <string name="lastSeen">Был(а) в сети</string>
     <string name="no_info">...</string>
     <string name="start_chatting_title">Создать беседу</string>

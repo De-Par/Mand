@@ -71,14 +71,14 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        DatabaseInteraction.pushUserStatus(getString(R.string.online));
+        DatabaseInteraction.pushUserStatus("online");
         super.onStart();
     }
 
     @Override
     protected void onResume() {
         preferences.registerOnSharedPreferenceChangeListener(listener);
-        DatabaseInteraction.pushUserStatus(getString(R.string.online));
+        DatabaseInteraction.pushUserStatus("online");
         super.onResume();
     }
 

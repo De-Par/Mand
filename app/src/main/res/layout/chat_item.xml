@@ -2,15 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:stateListAnimator="@android:anim/fade_in"
-    android:divider="@null"
     android:theme="@style/Theme.AppCompat.DayNight"
     android:dividerHeight="0dp"
-    android:layout_marginBottom="14dp"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
+    android:layout_marginBottom="12dp"
+    android:padding="10dp"
     android:background="@drawable/user_item_background"
     android:outlineProvider="none"
     android:nestedScrollingEnabled="false"
@@ -23,23 +20,21 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
             android:src="@drawable/profile_image_default" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <View
             android:id="@+id/onlineIndication"
-            android:forceDarkAllowed="false"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_alignBottom="@+id/profile_image"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_alignEnd="@+id/profile_image"
-            android:layout_marginEnd="3dp"
-            android:layout_marginBottom="3dp"
-            android:src="@drawable/profile_image_default"
-            android:visibility="visible"
-            app:civ_border_color="#64DD17"
-            app:civ_border_width="7dp" />
+            android:layout_alignBottom="@+id/profile_image"
+            android:layout_marginEnd="-5dp"
+            android:layout_marginBottom="-3dp"
+            android:background="@drawable/online_indicator"
+            android:forceDarkAllowed="true"
+            android:visibility="visible" />
 
     </RelativeLayout>
 
@@ -57,6 +52,7 @@
             android:gravity="top"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:fontFamily="sans-serif-medium"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_gravity="top"
@@ -64,8 +60,8 @@
 
         <TextView
             android:id="@+id/lastMessage"
-            android:textStyle="normal"
-            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textSize="14sp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:maxLines="1"

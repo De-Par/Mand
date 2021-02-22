@@ -95,7 +95,8 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_mail_fill"
-                        android:backgroundTint="@color/colorAccent"/>
+                        android:backgroundTint="@color/colorAccent"
+                        android:contentDescription="@string/email" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -136,7 +137,8 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_person_registration"
-                        android:backgroundTint="@color/colorAccent"/>
+                        android:backgroundTint="@color/colorAccent"
+                        android:contentDescription="@string/id" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -148,7 +150,7 @@
                             android:id="@+id/titleId"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="ID:"
+                            android:text="@string/id"
                             android:textColor="@color/black"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -177,7 +179,8 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_time_filled"
-                        android:backgroundTint="@color/colorAccent"/>
+                        android:backgroundTint="@color/colorAccent"
+                        android:contentDescription="@string/dateCR" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -256,7 +259,8 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_phone_outlined"
-                        android:backgroundTint="@color/colorAccent"/>
+                        android:backgroundTint="@color/colorAccent"
+                        android:contentDescription="@string/phone" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -298,7 +302,8 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_birthday"
-                        android:backgroundTint="@color/colorAccent"/>
+                        android:backgroundTint="@color/colorAccent"
+                        android:contentDescription="@string/dateBirth" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -340,7 +345,8 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_gender"
-                        android:backgroundTint="@color/colorAccent"/>
+                        android:backgroundTint="@color/colorAccent"
+                        android:contentDescription="@string/sex" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -382,7 +388,8 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_about_yourself"
-                        android:backgroundTint="@color/colorAccent"/>
+                        android:backgroundTint="@color/colorAccent"
+                        android:contentDescription="@string/about_yourself" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -419,7 +426,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="50dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/userDataCardAdd"/>

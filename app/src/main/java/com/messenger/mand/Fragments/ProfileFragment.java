@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,6 +44,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.messenger.mand.Activities.EditProfileActivity;
 import com.messenger.mand.Activities.ZoomViewActivity;
 import com.messenger.mand.Interactions.UserInteraction;
 import static com.messenger.mand.Values.Sensor.*;
@@ -75,6 +77,10 @@ public class ProfileFragment extends Fragment {
     private TextView id;
     private TextView dateCreation;
     private LottieAnimationView animationDone;
+
+    public ProfileFragment() {
+        //
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -125,10 +131,14 @@ public class ProfileFragment extends Fragment {
                 userName.setText(user.getName());
 
                 if (!user.getAvatar().equals("default") && isAdded()) {
-                    Glide.with(requireContext().getApplicationContext()).
-                            load(user.getAvatar()).into(imageProfile);
-                    isIcon = false;
-
+                    try {
+                        Glide.with(requireContext().getApplicationContext()).
+                                load(user.getAvatar()).into(imageProfile);
+                        isIcon = false;
+                    } catch (Exception e) {
+                        imageProfile.setImageResource(R.drawable.profile_image_default);
+                        isIcon = true;
+                    }
                 } else {
                     imageProfile.setImageResource(R.drawable.profile_image_default);
                     isIcon = true;
@@ -147,41 +157,20 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.main_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.menu_icon_edit) {
-            //TODO: ...
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if (requestCode == IMAGE_PICK_STORAGE_REQUEST_CODE) {
+            if (requestCode == IMAGE_PICK_STORAGE_CODE) {
                 assert data != null;
                 imageUri = data.getData();
                 uploadImageToProfile(imageUri);
             }
-            if (requestCode == IMAGE_PICK_CAMERA_REQUEST_CODE) {
-                Bundle extras = Objects.requireNonNull(data).getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                String path = MediaStore.Images.Media.insertImage(requireActivity().getContentResolver(),
-                        imageBitmap, "Date" + " - " + Calendar.getInstance().getTime(), null);
-                uploadImageToProfile(Uri.parse(path));
+            if (requestCode == IMAGE_PICK_CAMERA_CODE) {
+                uploadImageToProfile(imageUri);
             }
-
             if (uploadTask != null && uploadTask.isInProgress()) {
                 Toast.makeText(getContext(), R.string.upload, Toast.LENGTH_SHORT).show();
             }
-
         }
     }
 
@@ -195,7 +184,7 @@ public class ProfileFragment extends Fragment {
                     if (camAccepted && writeStorageAccepted) {
                         pickFromCamera();
                     } else {
-                        UserInteraction.showPopUpSnackBar("Enable camera and storage permission", getView(), getContext());
+                        UserInteraction.showPopUpSnackBar(getString(R.string.error_smth), getView(), getContext());
                     }
                 }
             }
@@ -206,7 +195,7 @@ public class ProfileFragment extends Fragment {
                     if (writeStorageAccepted) {
                         pickFromGallery();
                     } else {
-                        UserInteraction.showPopUpSnackBar("Enable storage permission", getView(), getContext());
+                        UserInteraction.showPopUpSnackBar(getString(R.string.error_smth), getView(), getContext());
                     }
                 }
             }
@@ -214,20 +203,24 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    private void pickFromCamera() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "Temp Pic");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description");
-
-        Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(camIntent, IMAGE_PICK_CAMERA_REQUEST_CODE);
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private void pickFromGallery() {
-        Intent galleryIntent = new Intent();
-        galleryIntent.setAction(Intent.ACTION_PICK);
-        galleryIntent.setType("image/*");
-        startActivityForResult(galleryIntent, IMAGE_PICK_STORAGE_REQUEST_CODE);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_icon_edit) {
+            gotoEditProfile();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void gotoEditProfile() {
+        Intent intent = new Intent(getContext(), EditProfileActivity.class);
+        startActivity(intent);
     }
 
     private void uploadImageToProfile(Uri uri) {
@@ -237,61 +230,84 @@ public class ProfileFragment extends Fragment {
                 setBackgroundDrawableResource(android.R.color.transparent);
         progressDialog.show();
 
-        String pathFileName = System.currentTimeMillis() + "_" + firebaseUser.getUid();
-
-        final StorageReference fileReference = storageReference.child(pathFileName);
+        String[] pathFileName = uri.getPath().split("/");
+        final StorageReference fileReference = storageReference.child(pathFileName[pathFileName.length - 1]);
         fileReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
             Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
             while (!uriTask.isSuccessful());
             Uri downloadUri = uriTask.getResult();
 
-            if (uriTask.isSuccessful()) {
+            if (uriTask.isSuccessful() && downloadUri != null) {
                 String mUri = Objects.requireNonNull(downloadUri).toString();
                 databaseReference = FirebaseDatabase.getInstance().getReference()
                         .child("Users").child(firebaseUser.getUid());
                 HashMap<String, Object> hashMap = new HashMap<>();
                 hashMap.put("avatar", mUri);
                 databaseReference.updateChildren(hashMap);
-                progressDialog.dismiss();
                 successfulAnimation();
 
             } else {
                 Toast.makeText(getContext(), R.string.error_smth, Toast.LENGTH_SHORT).show();
-                progressDialog.dismiss();
             }
+            progressDialog.dismiss();
         }).addOnFailureListener(e -> {
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
         });
     }
 
-    private void successfulAnimation() {
-        animationDone.setVisibility(View.VISIBLE);
-        animationDone.setSpeed(1.2f);
-        animationDone.bringToFront();
-        animationDone.playAnimation();
-    }
-
     private void alertDialogChoicer() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogTheme);
         String[] actions = {getString(R.string.open_photo), getString(R.string.change_photo),
                 getString(R.string.take_photo), getString(R.string.delete_photo)};
-        builder.setItems(actions, (dialog, which) -> {
-            if (which == 0) {
-                zoomAvatar();
-
-            } else if (which == 1) {
-
-                pickFromGallery();
-
-            } else if (which == 2) {
-                pickFromCamera();
-
-            } else if (which == 3) {
-                deleteAvatar();
+        builder.setItems(actions, (dialogInterface, i) -> {
+            switch (i) {
+                case 0:
+                    zoomAvatar();
+                    break;
+                case 1:
+                    if (!checkStoragePermission()) {
+                        requestStoragePermission();
+                    } else {
+                        pickFromGallery();
+                    }
+                    break;
+                case 2:
+//                    if (!checkCameraPermission()) {
+//                        requestCameraPermission();
+//                    } else {
+//                        pickFromCamera();
+//                    }
+                    pickFromCamera();
+                    break;
+                case 3:
+                    deleteAvatar();
+                    break;
             }
         });
-        builder.create().show();
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void pickFromCamera() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "Temp Pic");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description");
+
+        imageUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        camIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        if (camIntent.resolveActivity(getContext().getPackageManager()) != null) {
+            startActivityForResult(camIntent, IMAGE_PICK_CAMERA_CODE);
+        }
+    }
+
+    private void pickFromGallery() {
+        Intent galleryIntent = new Intent();
+        galleryIntent.setAction(Intent.ACTION_PICK);
+        galleryIntent.setType("image/*");
+        startActivityForResult(galleryIntent, IMAGE_PICK_STORAGE_CODE);
     }
 
     private void zoomAvatar() {
@@ -319,17 +335,17 @@ public class ProfileFragment extends Fragment {
     }
 
     private boolean checkStoragePermission() {
-        return ContextCompat.checkSelfPermission(requireActivity(),
+        return ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == (PackageManager.PERMISSION_GRANTED);
     }
+
     private void requestStoragePermission() {
-        ActivityCompat.requestPermissions(requireActivity(),
-                galleryPermissions, STORAGE_REQUEST_CODE);
+        requestPermissions(galleryPermissions, STORAGE_REQUEST_CODE);
     }
 
     private boolean checkCameraPermission() {
-        boolean flag1 = ContextCompat.checkSelfPermission(requireActivity(),
+        boolean flag1 = ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == (PackageManager.PERMISSION_GRANTED);
         boolean flag2 = ContextCompat.checkSelfPermission(requireActivity(),
@@ -338,12 +354,15 @@ public class ProfileFragment extends Fragment {
 
         return flag1 && flag2;
     }
+
     private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(requireActivity(),
-                galleryPermissions, CAMERA_REQUEST_CODE);
+        requestPermissions(cameraPermissions, CAMERA_REQUEST_CODE);
     }
 
-    public void setUploadTask(StorageTask<UploadTask.TaskSnapshot> uploadTask) {
-        this.uploadTask = uploadTask;
+    private void successfulAnimation() {
+        animationDone.setVisibility(View.VISIBLE);
+        animationDone.setSpeed(1.2f);
+        animationDone.bringToFront();
+        animationDone.playAnimation();
     }
 }

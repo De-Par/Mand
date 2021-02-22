@@ -1,9 +1,6 @@
 package com.messenger.mand.Fragments;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,10 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.messenger.mand.Activities.NavigationActivity;
 import com.messenger.mand.Adapters.UserAdapter;
-import com.messenger.mand.Interactions.DataInteraction;
-import com.messenger.mand.Interactions.DatabaseInteraction;
 import com.messenger.mand.Interactions.UserInteraction;
 import com.messenger.mand.Interfaces.DataPasser;
 import com.messenger.mand.Objects.User;
@@ -68,7 +61,7 @@ public class UsersFragment extends Fragment {
     private Animation changAnimOut;
     private Animation fbAnim;
 
-    private boolean search = false;
+    private boolean isSearch = false;
     private DataPasser dataPasser;
 
     @Override
@@ -124,30 +117,34 @@ public class UsersFragment extends Fragment {
 
         fab.setOnClickListener(v -> {
             fab.startAnimation(fbAnim);
-            if (search) {
+            if (isSearch) {
                 searchLayout.startAnimation(changAnimIn);
-                search = false;
+                isSearch = false;
             } else {
                 searchLayout.startAnimation(changAnimOut);
                 searchLayout.setVisibility(View.VISIBLE);
                 etSearch.setVisibility(View.VISIBLE);
-                search = true;
+                isSearch = true;
             }
         });
 
+        final String[] request = {null};
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                request[0] = etSearch.getText().toString().trim();
+            }
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 if (etSearch.getText().toString().startsWith(" ")) {
-                    etSearch.setText(etSearch.getText().toString().substring(1));
+                    etSearch.setText("");
                 }
-                searchUsersByCharacter(charSequence.toString().toLowerCase());
-                //searchUsers(charSequence.toString().toLowerCase());
             }
             @Override
             public void afterTextChanged(Editable s) {
+                if (!etSearch.getText().toString().trim().equals(request[0]) && isSearch) {
+                    searchUsersByCharacter(etSearch.getText().toString().trim().toLowerCase());
+                }
             }
         });
 
@@ -202,6 +199,12 @@ public class UsersFragment extends Fragment {
         dataPasser = (DataPasser) context;
     }
 
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        passData(LINK_CHATS);
+//    }
+
     public void passData(String data) {
         dataPasser.onDataPass(data);
     }
@@ -254,7 +257,7 @@ public class UsersFragment extends Fragment {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if ((etSearch.getText().toString().trim().equals("") || !search) && isAdded()) {
+                if ((etSearch.getText().toString().trim().equals("") || !isSearch) && isAdded()) {
                     if (!userArrayList.isEmpty()) userArrayList.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
@@ -284,4 +287,5 @@ public class UsersFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
+
 }

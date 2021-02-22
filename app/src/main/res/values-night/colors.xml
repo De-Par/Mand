@@ -13,6 +13,7 @@
 
     <!--Main colors-->
     <color name="black">#000000</color>
+    <color name="black_contrast">#FFFFFF</color>
     <color name="black_overlay">#66000000</color>
     <color name="greyDark">#404040</color>
 
@@ -41,5 +42,7 @@
     <color name="yellow">#D0C00C</color>
     <color name="green">#147B19</color>
     <color name="red">#DA0A0A</color>
+
+    <color name="greenBright">#1DDD08</color>
 
 </resources>

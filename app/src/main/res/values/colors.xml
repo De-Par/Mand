@@ -13,11 +13,9 @@
 
     <!--Main colors-->
     <color name="black">#000000</color>
+    <color name="black_contrast">#000000</color>
     <color name="black_overlay">#66000000</color>
     <color name="greyDark">#404040</color>
-    <color name="yellow">#FDD835</color>
-    <color name="green">#18A61F</color>
-    <color name="red">#FF0040</color>
 
     <!--Additional variants-->
     <color name="light_blue_600">#FF039BE5</color>
@@ -41,6 +39,10 @@
     <color name="colorCursor">#0489EF</color>
 
     <!--Dialogs elements-->
-    <!-- see higher   -->
+    <color name="yellow">#FDD835</color>
+    <color name="green">#18A61F</color>
+    <color name="red">#FF0040</color>
+
+    <color name="greenBright">#1DDD08</color>
 
 </resources>

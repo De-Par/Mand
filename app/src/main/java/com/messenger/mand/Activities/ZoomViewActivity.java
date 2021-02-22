@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.github.chrisbanes.photoview.PhotoView;
 import com.messenger.mand.R;
@@ -73,7 +75,6 @@ public class ZoomViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_fullscreen);
 
         mVisible = true;

@@ -2,6 +2,7 @@
 <resources>
     <array name="preloaded_fonts" translatable="false">
         <item>@font/archivo_black</item>
+        <item>@font/archivo_black_bold</item>
         <item>@font/baloo_chettan</item>
         <item>@font/bungee_shade</item>
         <item>@font/cantarell</item>

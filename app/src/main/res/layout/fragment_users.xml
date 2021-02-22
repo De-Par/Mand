@@ -94,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:fastScrollEnabled="true"
-            android:scrollbarSize="5dp"
+            android:scrollbarSize="2dp"
             android:verticalScrollbarPosition="right"
             android:scrollbarStyle="insideInset"
             android:isScrollContainer="true"
@@ -102,7 +102,7 @@
             android:smoothScrollbar="true"
             android:scrollIndicators="right"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
-            android:paddingTop="14dp"/>
+            android:padding="16dp"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

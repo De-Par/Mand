@@ -44,7 +44,6 @@ import com.messenger.mand.Interfaces.DataPasser;
 import static com.messenger.mand.Values.Navigation.*;
 
 import com.messenger.mand.Objects.Chat;
-import com.messenger.mand.Objects.Message;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
 
@@ -68,7 +67,7 @@ public class ChatsFragment extends Fragment {
     private Animation fbAnim;
     private LottieAnimationView animationNobody;
 
-    private boolean search = false;
+    private boolean isSearch = false;
 
     private FirebaseUser firebaseUser;
     DataPasser dataPasser;
@@ -180,33 +179,34 @@ public class ChatsFragment extends Fragment {
 
         fab.setOnClickListener(v -> {
             fab.startAnimation(fbAnim);
-            if (search) {
+            if (isSearch) {
                 searchLayout.startAnimation(changAnimIn);
-                search = false;
+                isSearch = false;
             } else {
                 searchLayout.startAnimation(changAnimOut);
                 searchLayout.setVisibility(View.VISIBLE);
                 etSearch.setVisibility(View.VISIBLE);
-                search = true;
+                isSearch = true;
             }
         });
 
+        final String[] request = {null};
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                request[0] = etSearch.getText().toString().trim();
             }
-
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-
                 if (etSearch.getText().toString().startsWith(" ")) {
-                    etSearch.setText(etSearch.getText().toString().substring(1));
+                    etSearch.setText("");
                 }
-                searchUsersByCharacter(charSequence.toString().toLowerCase());
             }
-
             @Override
             public void afterTextChanged(Editable s) {
+                if (!etSearch.getText().toString().trim().equals(request[0]) && isSearch) {
+                    searchUsersByCharacter(etSearch.getText().toString().trim().toLowerCase());
+                }
             }
         });
 
@@ -241,15 +241,7 @@ public class ChatsFragment extends Fragment {
                     for (String id : usersList) {
                         assert user != null;
                         if (user.getId().equals(id)) {
-                            if (mUsers.size() != 0) {
-                                for (User u : mUsers) {
-                                    if (!user.getId().equals(u.getId())) {
-                                        mUsers.add(user);
-                                    }
-                                }
-                            } else {
-                                mUsers.add(user);
-                            }
+                            mUsers.add(user);
                         }
                     }
                 }
