@@ -211,6 +211,10 @@ public class LoginActivity extends AppCompatActivity {
         hashMap.put("email", firebaseUser.getEmail());
         hashMap.put("avatar", "default");
         hashMap.put("dateCreation", DataInteraction.getTimeNow());
+        hashMap.put("dateBirth", getString(R.string.no_info));
+        hashMap.put("phone", getString(R.string.no_info));
+        hashMap.put("sex", getString(R.string.no_info));
+        hashMap.put("aboutMe", getString(R.string.no_info));
         hashMap.put("status", "online");
         hashMap.put("searchName", username.toLowerCase());
 

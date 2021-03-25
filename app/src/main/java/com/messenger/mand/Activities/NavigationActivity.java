@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,14 +37,15 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
     private FragmentManager fragmentManager;
     private ChipNavigationBar bottomNav;
     private boolean isExit = false;
+    String position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean isNight = preferences.getBoolean("theme", false);
-
         if (isNight) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
@@ -52,11 +54,21 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
 
         bottomNav = findViewById(R.id.bottomActionBar);
 
-        if (savedInstanceState == null) {
+        try {
+            position = getIntent().getStringExtra("position");
+            Log.e("POSITION", position);
+        } catch (Exception e) {
+            Log.e("POSITION", e.toString());
+        }
+
+        if (savedInstanceState == null && position == null) {
             bottomNav.setItemSelected(R.id.navigation_chats, true);
             fragmentManager = getSupportFragmentManager();
             ChatsFragment chatsFragment = new ChatsFragment();
             fragmentManager.beginTransaction().replace(R.id.fragment_container, chatsFragment).commit();
+
+        } else if (position != null) {
+            changeViewPosition(position);
         }
 
         bottomNav.setOnItemSelectedListener(i -> {
@@ -142,11 +154,8 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
             fragment = new ChatsFragment();
             bottomNav.setItemSelected(R.id.navigation_chats, true);
         }
-
-        if (fragment != null) {
-            fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit();
-        }
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit();
     }
 
 //    public void setLocale(String lang) {

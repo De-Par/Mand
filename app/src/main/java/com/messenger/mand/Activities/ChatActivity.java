@@ -44,6 +44,7 @@ import com.messenger.mand.Objects.Message;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -168,14 +169,15 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 statusUser.setText(status);
 
-                if (user.getAvatar().equals("default")) {
-                    avatar.setImageResource(R.drawable.profile_image_default);
-                } else {
+                if (!user.getAvatar().equals("default") && !user.getAvatar().equals("")) {
                     try {
                         Glide.with(getApplicationContext()).load(user.getAvatar()).into(avatar);
                     } catch (Exception e) {
                         Log.e("AVATAR", e.getLocalizedMessage());
+                        avatar.setImageResource(R.drawable.profile_image_default);
                     }
+                } else {
+                    avatar.setImageResource(R.drawable.profile_image_default);
                 }
             }
             @Override
@@ -302,24 +304,29 @@ public class ChatActivity extends AppCompatActivity {
                 setBackgroundDrawableResource(android.R.color.transparent);
         progressDialog.show();
 
-        String[] pathFileName = uri.getPath().split("/");
-        final StorageReference fileReference = chatImagesStorageReference.child(pathFileName[pathFileName.length - 1]);
-        fileReference.child(pathFileName[1]).putFile(uri).addOnSuccessListener(taskSnapshot -> {
-            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-            while (!uriTask.isSuccessful());
-            Uri downloadUri = uriTask.getResult();
+        if (uri != null) {
+            String imageName = new File(uri.getPath()).getName();
+            final StorageReference fileReference = chatImagesStorageReference.child(imageName);
+            fileReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                while (!uriTask.isSuccessful());
+                Uri downloadUri = uriTask.getResult();
 
-            if (uriTask.isSuccessful()) {
-                sendMessageToDB(firebaseUser.getUid(), recipientUserId, "",
-                        downloadUri.toString(), DataInteraction.getTimeNow());
-            } else {
-                Toast.makeText(ChatActivity.this, R.string.error_smth, Toast.LENGTH_SHORT).show();
-            }
+                if (uriTask.isSuccessful()) {
+                    assert downloadUri != null;
+                    sendMessageToDB(firebaseUser.getUid(), recipientUserId, "",
+                            downloadUri.toString(), DataInteraction.getTimeNow());
+                } else {
+                    Toast.makeText(ChatActivity.this, R.string.error_smth, Toast.LENGTH_SHORT).show();
+                }
+                progressDialog.dismiss();
+            }).addOnFailureListener(e -> {
+                Toast.makeText(ChatActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            });
+        } else {
             progressDialog.dismiss();
-        }).addOnFailureListener(e -> {
-            Toast.makeText(ChatActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            progressDialog.dismiss();
-        });
+        }
     }
 
     private void sendMessageToDB(final String sender, final String receiver, final String message,

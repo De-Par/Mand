@@ -47,18 +47,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull final UserViewHolder userViewHolder, int position) {
-
         final User user = listOfUsers.get(position);
         userViewHolder.user_name.setText(user.getName());
 
-        if (user.getAvatar().equals("default")) {
+        if (!user.getAvatar().equals("default") && !user.getAvatar().equals("")) {
             try {
-                userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
+                Glide.with(context).load(user.getAvatar()).into(userViewHolder.avatar);
             } catch (Exception e) {
                 Log.e("AVATAR", e.getLocalizedMessage());
+                userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
             }
         } else {
-            Glide.with(context).load(user.getAvatar()).into(userViewHolder.avatar);
+            userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
         }
 
         displayLastMessage(user.getId(), userViewHolder.last_message, user);
@@ -144,11 +144,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
     private String defineMessageType(Message message) {
         if (message.getText().trim().length() != 0) {
             return message.getText().trim();
-        } else if (message == null) {
-            return context.getString(R.string.no_info);
-        } else {
-            return context.getString(R.string.photo);
-        }
+        } 
+        return context.getString(R.string.photo);
     }
 
     private String abbreviateLongMessage(String text) {

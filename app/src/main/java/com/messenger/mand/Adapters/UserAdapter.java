@@ -58,14 +58,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull final UserViewHolder userViewHolder, int position) {
-
         final User user = users.get(position);
         userViewHolder.user_name.setText(user.getName());
 
-        if (user.getAvatar().equals("default")){
-            userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
+        if (!user.getAvatar().equals("default") && !user.getAvatar().equals("")){
+            try {
+                Glide.with(context).load(user.getAvatar()).into(userViewHolder.avatar);
+            } catch (Exception e) {
+                Log.e("AVATAR", e.getLocalizedMessage());
+                userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
+            }
         } else {
-            Glide.with(context).load(user.getAvatar()).into(userViewHolder.avatar);
+            userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
         }
 
         String status;

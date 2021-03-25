@@ -62,8 +62,8 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(SettingsActivity.this, NavigationActivity.class);
-            intent.putExtra("Nav_link", LINK_PROFILE);
+            Intent intent = new Intent(getBaseContext(), NavigationActivity.class);
+            intent.putExtra("position", LINK_PROFILE);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

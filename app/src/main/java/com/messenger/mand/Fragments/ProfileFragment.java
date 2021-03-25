@@ -52,6 +52,7 @@ import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Objects.User;
 import com.messenger.mand.R;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
@@ -71,11 +72,15 @@ public class ProfileFragment extends Fragment {
     private StorageTask<UploadTask.TaskSnapshot> uploadTask;
     String[] galleryPermissions;
     String[] cameraPermissions;
-    Uri imageUri = null;
+    Uri imageUri;
 
     private TextView email;
     private TextView id;
     private TextView dateCreation;
+    private TextView dateBirth;
+    private TextView phone;
+    private TextView sex;
+    private TextView aboutMe;
     private LottieAnimationView animationDone;
 
     public ProfileFragment() {
@@ -96,6 +101,11 @@ public class ProfileFragment extends Fragment {
         email = view.findViewById(R.id.txtMail);
         id = view.findViewById(R.id.txtId);
         dateCreation = view.findViewById(R.id.txtDate);
+        dateBirth = view.findViewById(R.id.txtBirth);
+        phone = view.findViewById(R.id.txtPhone);
+        sex = view.findViewById(R.id.txtSex);
+        aboutMe = view.findViewById(R.id.txtAbout);
+
         animationDone = view.findViewById(R.id.lottieAnimationDone);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -129,8 +139,7 @@ public class ProfileFragment extends Fragment {
                 User user = dataSnapshot.getValue(User.class);
                 assert user != null;
                 userName.setText(user.getName());
-
-                if (!user.getAvatar().equals("default") && isAdded()) {
+                if (!user.getAvatar().equals("default") && isAdded() && !user.getAvatar().equals("")) {
                     try {
                         Glide.with(requireContext().getApplicationContext()).
                                 load(user.getAvatar()).into(imageProfile);
@@ -146,10 +155,13 @@ public class ProfileFragment extends Fragment {
                 email.setText(user.getEmail());
                 id.setText(user.getId());
                 dateCreation.setText(user.getDateCreation());
+                dateBirth.setText(user.getDateBirth());
+                phone.setText(user.getPhone());
+                sex.setText(user.getSex());
+                aboutMe.setText(user.getAboutMe());
             }
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
 
         setHasOptionsMenu(true);
@@ -230,30 +242,34 @@ public class ProfileFragment extends Fragment {
                 setBackgroundDrawableResource(android.R.color.transparent);
         progressDialog.show();
 
-        String[] pathFileName = uri.getPath().split("/");
-        final StorageReference fileReference = storageReference.child(pathFileName[pathFileName.length - 1]);
-        fileReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
-            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-            while (!uriTask.isSuccessful());
-            Uri downloadUri = uriTask.getResult();
+        if (uri != null) {
+            String imageName = new File(uri.getPath()).getName();
+            final StorageReference fileReference = storageReference.child(imageName);
+            fileReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                while (!uriTask.isSuccessful());
+                Uri downloadUri = uriTask.getResult();
 
-            if (uriTask.isSuccessful() && downloadUri != null) {
-                String mUri = Objects.requireNonNull(downloadUri).toString();
-                databaseReference = FirebaseDatabase.getInstance().getReference()
-                        .child("Users").child(firebaseUser.getUid());
-                HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("avatar", mUri);
-                databaseReference.updateChildren(hashMap);
-                successfulAnimation();
+                if (uriTask.isSuccessful() && downloadUri != null) {
+                    String mUri = Objects.requireNonNull(downloadUri).toString();
+                    databaseReference = FirebaseDatabase.getInstance().getReference()
+                            .child("Users").child(firebaseUser.getUid());
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("avatar", mUri);
+                    databaseReference.updateChildren(hashMap);
+                    successfulAnimation();
 
-            } else {
-                Toast.makeText(getContext(), R.string.error_smth, Toast.LENGTH_SHORT).show();
-            }
+                } else {
+                    Toast.makeText(getContext(), R.string.error_smth, Toast.LENGTH_SHORT).show();
+                }
+                progressDialog.dismiss();
+            }).addOnFailureListener(e -> {
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            });
+        } else {
             progressDialog.dismiss();
-        }).addOnFailureListener(e -> {
-            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            progressDialog.dismiss();
-        });
+        }
     }
 
     private void alertDialogChoicer() {
@@ -273,11 +289,11 @@ public class ProfileFragment extends Fragment {
                     }
                     break;
                 case 2:
-//                    if (!checkCameraPermission()) {
-//                        requestCameraPermission();
-//                    } else {
-//                        pickFromCamera();
-//                    }
+                    if (!checkCameraPermission()) {
+                        requestCameraPermission();
+                    } else {
+                        pickFromCamera();
+                    }
                     pickFromCamera();
                     break;
                 case 3:
@@ -294,11 +310,11 @@ public class ProfileFragment extends Fragment {
         values.put(MediaStore.Images.Media.TITLE, "Temp Pic");
         values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description");
 
-        imageUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        imageUri = requireActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
         Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         camIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        if (camIntent.resolveActivity(getContext().getPackageManager()) != null) {
+        if (camIntent.resolveActivity(requireContext().getPackageManager()) != null) {
             startActivityForResult(camIntent, IMAGE_PICK_CAMERA_CODE);
         }
     }

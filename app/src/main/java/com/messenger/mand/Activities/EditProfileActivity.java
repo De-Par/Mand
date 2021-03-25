@@ -1,18 +1,35 @@
 package com.messenger.mand.Activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NavUtils;
+import androidx.appcompat.widget.Toolbar;
 
 import com.messenger.mand.Interactions.DataInteraction;
 import com.messenger.mand.Interactions.DatabaseInteraction;
 import com.messenger.mand.R;
 
-public class EditProfileActivity extends AppCompatActivity {
+import java.util.Objects;
+
+import static com.messenger.mand.Values.Navigation.LINK_PROFILE;
+
+public class EditProfileActivity extends AppCompatActivity  {
+
+    ListView listView;
 
     public EditProfileActivity() {}
 
@@ -21,12 +38,31 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        View cancelButton = findViewById(R.id.closePage);
-        cancelButton.setOnClickListener(v -> {
-            Intent intent = new Intent(EditProfileActivity.this, NavigationActivity.class);
-            intent.putExtra("position", 3);
-            startActivity(intent);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.profile));
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        String[] titles = { getString(R.string.nickname),  };
+        ItemAdapter itemAdapter = new ItemAdapter(this, titles);
+
+        listView = findViewById(R.id.editListView);
+        listView.setAdapter(itemAdapter);
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(getBaseContext(), NavigationActivity.class);
+            intent.putExtra("position", LINK_PROFILE);
+            startActivity(intent);
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -71,5 +107,24 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         dialog.show();
+    }
+
+    private class ItemAdapter extends ArrayAdapter<String> {
+        private final String[] titles;
+
+        public ItemAdapter(Context context, String[] titles) {
+            super(context, R.layout.edit_profile_item, R.id.item, titles);
+            this.titles = titles;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View row = inflater.inflate(R.layout.edit_profile_item, parent, false);
+            TextView text = row.findViewById(R.id.item);
+            text.setText(titles[position]);
+            return row;
+        }
     }
 }

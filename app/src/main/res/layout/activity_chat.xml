@@ -141,6 +141,7 @@
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:maxLines="4"
+                android:textCursorDrawable="@drawable/cursor"
                 android:scrollHorizontally="false"
                 android:hint="@string/message"
                 android:textColorHint="@color/black"

@@ -9,14 +9,16 @@ public class User {
     private String status;
     private String dateCreation;
     private String searchName;
-    private String lastMessage;
+    private String phone;
+    private String dateBirth;
+    private String sex;
+    private String aboutMe;
 
     public User() {}
 
-    public User(String name, String email, String id, String avatar,
-                String status, String dateCreation, String searchName,
-                String lastMessage) {
-
+    public User(String name, String email, String id, String avatar, String status,
+                String dateCreation, String searchName, String phone,
+                String dateBirth, String sex, String aboutMe) {
         this.name = name;
         this.email = email;
         this.id = id;
@@ -24,7 +26,10 @@ public class User {
         this.status = status;
         this.dateCreation = dateCreation;
         this.searchName = searchName;
-        this.lastMessage = lastMessage;
+        this.phone = phone;
+        this.dateBirth = dateBirth;
+        this.sex = sex;
+        this.aboutMe = aboutMe;
     }
 
     public String getName() {
@@ -83,8 +88,35 @@ public class User {
         this.searchName = searchName;
     }
 
-    public String getLastMessage() { return lastMessage; }
+    public String getPhone() {
+        return phone;
+    }
 
-    public void setLastMessage(String lastMessage) { this.lastMessage = lastMessage; }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
+    public String getDateBirth() {
+        return dateBirth;
+    }
+
+    public void setDateBirth(String dateBirth) {
+        this.dateBirth = dateBirth;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getAboutMe() {
+        return aboutMe;
+    }
+
+    public void setAboutMe(String aboutMe) {
+        this.aboutMe = aboutMe;
+    }
 }

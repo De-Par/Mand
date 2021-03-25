@@ -214,11 +214,11 @@ public class ChatsFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.search_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+//        inflater.inflate(R.menu.search_menu, menu);
+//        super.onCreateOptionsMenu(menu, inflater);
+//    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -305,8 +305,7 @@ public class ChatsFragment extends Fragment {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
 }

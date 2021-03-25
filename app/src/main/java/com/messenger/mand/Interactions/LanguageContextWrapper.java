@@ -18,24 +18,12 @@ public class LanguageContextWrapper extends ContextWrapper {
     public static ContextWrapper wrap(Context context, String language) {
         Configuration config = context.getResources().getConfiguration();
         Locale sysLocale = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            sysLocale = getSystemLocale(config);
-        } else {
-            sysLocale = getSystemLocaleLegacy(config);
-        }
+        sysLocale = getSystemLocale(config);
         if (!language.equals("") && !sysLocale.getLanguage().equals(language)) {
             Locale locale = new Locale(language);
             Locale.setDefault(locale);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                setSystemLocale(config, locale);
-            } else {
-                setSystemLocaleLegacy(config, locale);
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                context = context.createConfigurationContext(config);
-            } else {
-                context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
-            }
+            setSystemLocale(config, locale);
+            context = context.createConfigurationContext(config);
         }
         return new LanguageContextWrapper(context);
     }
