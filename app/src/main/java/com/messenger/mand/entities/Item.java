@@ -1,4 +1,4 @@
-package com.messenger.mand.Objects;
+package com.messenger.mand.objects;
 
 public class Item {
     private String section;
