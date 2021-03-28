@@ -1,4 +1,4 @@
-package com.messenger.mand.Adapters;
+package com.messenger.mand.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -25,9 +25,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.messenger.mand.Activities.ChatActivity;
-import com.messenger.mand.Objects.Chat;
-import com.messenger.mand.Objects.User;
+import com.messenger.mand.activities.ChatActivity;
+import com.messenger.mand.entities.Chat;
+import com.messenger.mand.entities.User;
 import com.messenger.mand.R;
 
 import java.util.ArrayList;
@@ -37,9 +37,10 @@ import java.util.Objects;
 
 import javax.crypto.SecretKey;
 
-import static com.messenger.mand.Interactions.EncryptDecryptString.*;
+import static com.messenger.mand.interactions.EncryptDecryptString.*;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
+    private final String TAG = UserAdapter.class.toString();
 
     private final ArrayList<User> users;
     private final Context context;
@@ -65,7 +66,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             try {
                 Glide.with(context).load(user.getAvatar()).into(userViewHolder.avatar);
             } catch (Exception e) {
-                Log.e("AVATAR", e.getLocalizedMessage());
+                Log.e(TAG, e.getLocalizedMessage());
                 userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
             }
         } else {

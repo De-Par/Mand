@@ -1,7 +1,10 @@
 <resources>
 
-    <style name="ThemeOverlay.Mand.FullscreenContainer" parent="">
+    <style name="Theme.Mand" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="fullscreenBackgroundColor">@color/light_blue_900</item>
         <item name="fullscreenTextColor">@color/light_blue_A400</item>
+        <item name="android:windowSharedElementsUseOverlay">true</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/smooth_transition</item>
+        <item name="android:windowSharedElementExitTransition">@transition/smooth_transition</item>
     </style>
 </resources>

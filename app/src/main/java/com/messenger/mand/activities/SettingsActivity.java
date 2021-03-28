@@ -1,4 +1,4 @@
-package com.messenger.mand.Activities;
+package com.messenger.mand.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,10 +14,10 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
 
-import com.messenger.mand.Fragments.SettingsFragment;
-import com.messenger.mand.Interactions.DatabaseInteraction;
-import com.messenger.mand.Interactions.DataInteraction;
-import static com.messenger.mand.Values.Navigation.*;
+import com.messenger.mand.fragments.SettingsFragment;
+import com.messenger.mand.interactions.DatabaseInteraction;
+import com.messenger.mand.interactions.DataInteraction;
+import static com.messenger.mand.values.Navigation.*;
 import com.messenger.mand.R;
 
 import java.util.Locale;

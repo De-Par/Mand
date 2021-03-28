@@ -10,7 +10,7 @@
    android:background="@android:color/background_light"
    android:animateLayoutChanges="true"
     android:id="@+id/settingsContainer"
-   tools:context=".Activities.SettingsActivity">
+   tools:context=".activities.SettingsActivity">
 
    <androidx.constraintlayout.widget.ConstraintLayout
        android:id="@+id/linearLayoutSettings"
@@ -47,7 +47,7 @@
 
        <androidx.fragment.app.FragmentContainerView
            android:id="@+id/activity_settings"
-           android:name="com.messenger.mand.Fragments.SettingsFragment"
+           android:name="com.messenger.mand.fragments.SettingsFragment"
            android:layout_width="match_parent"
            android:layout_height="match_parent"
            app:layout_constraintTop_toBottomOf="@id/appBarLayout" />

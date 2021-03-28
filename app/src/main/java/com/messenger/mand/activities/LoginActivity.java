@@ -1,4 +1,4 @@
-package com.messenger.mand.Activities;
+package com.messenger.mand.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -27,8 +27,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.messenger.mand.Interactions.DataInteraction;
-import com.messenger.mand.Interactions.UserInteraction;
+import com.messenger.mand.interactions.DataInteraction;
+import com.messenger.mand.interactions.UserInteraction;
 import com.messenger.mand.R;
 import com.shobhitpuri.custombuttons.GoogleSignInButton;
 
@@ -203,18 +203,18 @@ public class LoginActivity extends AppCompatActivity {
                         getWindow().getCurrentFocus(), getApplicationContext()));
     }
 
-    private HashMap<String, String> createUserMap(String id, String username, FirebaseUser firebaseUser) {
-        HashMap<String, String> hashMap = new HashMap<>();
+    private HashMap<String, Object> createUserMap(String id, String username, FirebaseUser firebaseUser) {
+        HashMap<String, Object> hashMap = new HashMap<>();
 
         hashMap.put("id", id);
         hashMap.put("name", username);
         hashMap.put("email", firebaseUser.getEmail());
         hashMap.put("avatar", "default");
         hashMap.put("dateCreation", DataInteraction.getTimeNow());
-        hashMap.put("dateBirth", getString(R.string.no_info));
-        hashMap.put("phone", getString(R.string.no_info));
-        hashMap.put("sex", getString(R.string.no_info));
-        hashMap.put("aboutMe", getString(R.string.no_info));
+        hashMap.put("dateBirth", "");
+        hashMap.put("phone", "");
+        hashMap.put("sex", "");
+        hashMap.put("aboutMe", "");
         hashMap.put("status", "online");
         hashMap.put("searchName", username.toLowerCase());
 

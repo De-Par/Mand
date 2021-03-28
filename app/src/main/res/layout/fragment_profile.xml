@@ -9,7 +9,7 @@
     android:background="@color/white"
     android:forceDarkAllowed="true"
     android:id="@+id/viewProfile"
-    tools:context="com.messenger.mand.Fragments.ProfileFragment">
+    tools:context="com.messenger.mand.fragments.ProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_gravity="fill"

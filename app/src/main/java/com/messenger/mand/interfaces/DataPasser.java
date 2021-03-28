@@ -1,4 +1,4 @@
-package com.messenger.mand.Interfaces;
+package com.messenger.mand.interfaces;
 
 public interface DataPasser {
 

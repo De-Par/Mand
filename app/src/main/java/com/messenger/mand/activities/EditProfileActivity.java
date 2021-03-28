@@ -1,4 +1,4 @@
-package com.messenger.mand.Activities;
+package com.messenger.mand.activities;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,13 +17,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.messenger.mand.Interactions.DataInteraction;
-import com.messenger.mand.Interactions.DatabaseInteraction;
+import com.messenger.mand.interactions.DataInteraction;
+import com.messenger.mand.interactions.DatabaseInteraction;
 import com.messenger.mand.R;
 
 import java.util.Objects;
 
-import static com.messenger.mand.Values.Navigation.LINK_PROFILE;
+import static com.messenger.mand.values.Navigation.LINK_PROFILE;
 
 public class EditProfileActivity extends AppCompatActivity  {
 

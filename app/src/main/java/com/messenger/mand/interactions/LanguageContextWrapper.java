@@ -1,4 +1,4 @@
-package com.messenger.mand.Interactions;
+package com.messenger.mand.interactions;
 
 import android.annotation.TargetApi;
 import android.content.Context;

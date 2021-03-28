@@ -1,4 +1,4 @@
-package com.messenger.mand.Activities;
+package com.messenger.mand.activities;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -19,7 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.messenger.mand.Interactions.UserInteraction;
+import com.messenger.mand.interactions.UserInteraction;
 import com.messenger.mand.R;
 
 import java.util.Objects;

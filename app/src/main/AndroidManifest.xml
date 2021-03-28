@@ -8,7 +8,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <uses-feature android:name="android.hardware.camera"
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
 
     <queries>
@@ -24,13 +25,14 @@
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppThemeLight"
         android:windowSoftInputMode="adjustPan">
 
         <activity
-            android:name=".Activities.SplashScreenActivity"
+            android:name=".activities.SplashScreenActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,44 +41,43 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.StartActivity"
-            android:parentActivityName=".Activities.SplashScreenActivity" />
+            android:name=".activities.StartActivity"
+            android:parentActivityName=".activities.SplashScreenActivity" />
         <activity
-            android:name=".Activities.NavigationActivity"
-            android:parentActivityName=".Activities.StartActivity"
+            android:name=".activities.NavigationActivity"
+            android:parentActivityName=".activities.StartActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
-            android:name=".Activities.ChatActivity"
-            android:parentActivityName=".Activities.NavigationActivity"
+            android:name=".activities.ChatActivity"
+            android:parentActivityName=".activities.NavigationActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
-            android:name=".Activities.RecoverPasswordActivity"
-            android:parentActivityName=".Activities.LoginActivity"
+            android:name=".activities.RecoverPasswordActivity"
+            android:parentActivityName=".activities.LoginActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
-            android:name=".Activities.SettingsActivity"
-            android:parentActivityName=".Activities.NavigationActivity"
+            android:name=".activities.SettingsActivity"
+            android:parentActivityName=".activities.NavigationActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
-            android:name=".Activities.RegisterActivity"
-            android:parentActivityName=".Activities.StartActivity"
+            android:name=".activities.RegisterActivity"
+            android:parentActivityName=".activities.StartActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
-            android:name=".Activities.LoginActivity"
-            android:parentActivityName=".Activities.StartActivity"
+            android:name=".activities.LoginActivity"
+            android:parentActivityName=".activities.StartActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
-            android:name=".Activities.ZoomViewActivity"
+            android:name=".activities.ZoomImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/AppThemeLight.Fullscreen" />
-
+            android:label="@string/title_activity_fullscreen" />
         <activity
-            android:name=".Activities.EditProfileActivity"
-            android:parentActivityName=".Activities.NavigationActivity"
+            android:name=".activities.EditProfileActivity"
+            android:parentActivityName=".activities.NavigationActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
 
         <service
-            android:name=".Notifications.FirebaseMessaging"
+            android:name=".notifications.FirebaseMessaging"
             android:enabled="true"
             android:exported="false"
             android:stopWithTask="false">
@@ -84,6 +85,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

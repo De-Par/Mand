@@ -1,12 +1,11 @@
-package com.messenger.mand.Fragments;
+package com.messenger.mand.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,17 +36,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.messenger.mand.Adapters.UserAdapter;
-import com.messenger.mand.Interactions.UserInteraction;
-import com.messenger.mand.Interfaces.DataPasser;
-import com.messenger.mand.Objects.User;
-import static com.messenger.mand.Values.Navigation.*;
+import com.messenger.mand.adapters.UserAdapter;
+import com.messenger.mand.interactions.UserInteraction;
+import com.messenger.mand.interfaces.DataPasser;
+import com.messenger.mand.entities.User;
+import static com.messenger.mand.values.Navigation.*;
 import com.messenger.mand.R;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class UsersFragment extends Fragment {
+    private final String TAG = UsersFragment.class.toString();
 
     private ArrayList<User> userArrayList;
     private RecyclerView recyclerView;
@@ -158,7 +159,12 @@ public class UsersFragment extends Fragment {
                 userName.setText(user.getName());
 
                 if (!user.getAvatar().equals("default") && isAdded()) {
-                    Glide.with(view.getRootView()).load(user.getAvatar()).into(userPhoto);
+                    try {
+                        Glide.with(view.getRootView()).load(user.getAvatar()).into(userPhoto);
+                    } catch (Exception e) {
+                        userPhoto.setImageResource(R.drawable.profile_image_default);
+                        Log.e(TAG, e.toString());
+                    }
                 } else {
                     userPhoto.setImageResource(R.drawable.profile_image_default);
                 }

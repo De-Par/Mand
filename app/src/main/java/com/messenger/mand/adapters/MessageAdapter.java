@@ -1,4 +1,4 @@
-package com.messenger.mand.Adapters;
+package com.messenger.mand.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,21 +18,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.messenger.mand.Activities.ZoomViewActivity;
-import com.messenger.mand.Interactions.DataInteraction;
-import com.messenger.mand.Objects.Message;
+import com.messenger.mand.activities.ZoomImageActivity;
+import com.messenger.mand.interactions.DataInteraction;
+import com.messenger.mand.entities.Message;
 
-import static com.messenger.mand.Interactions.EncryptDecryptString.decryptString;
-import static com.messenger.mand.Interactions.EncryptDecryptString.generateKey;
-import static com.messenger.mand.Values.Sensor.*;
+import static com.messenger.mand.values.Sensor.*;
 import com.messenger.mand.R;
 
 import java.util.List;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
+    private final String TAG = MessageAdapter.class.toString();
 
     private final List<Message> listOfMessages;
     private final Context context;
@@ -103,7 +99,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.txt_img.setImageResource(R.drawable.ic_seen);
         }
 
-        holder.photoImageView.setOnClickListener(v -> zoomImage(holder));
+        holder.photoImageView.setOnClickListener(v -> zoomImage(message.getImageUrl()));
     }
 
     @Override
@@ -145,9 +141,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         return message.getTime().substring(message.getTime().length() - 5);
     }
 
-    private void zoomImage(ViewHolder holder) {
-        byte[] arr = DataInteraction.convertDrawableToByteArr(((BitmapDrawable) holder.photoImageView.
-                getDrawable()).getBitmap(), ORIGINAL);
-        context.startActivity(new Intent(context, ZoomViewActivity.class).putExtra("photo", arr));
+    private void zoomImage(String url) {
+        try {
+            context.startActivity(new Intent(context, ZoomImageActivity.class).putExtra("photo", url).
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (Exception e) {
+            Log.e(TAG, e.getLocalizedMessage());
+        }
     }
 }

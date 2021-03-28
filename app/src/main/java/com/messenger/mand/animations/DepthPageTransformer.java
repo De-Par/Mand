@@ -1,4 +1,4 @@
-package com.messenger.mand.Animations;
+package com.messenger.mand.animations;
 
 import android.view.View;
 

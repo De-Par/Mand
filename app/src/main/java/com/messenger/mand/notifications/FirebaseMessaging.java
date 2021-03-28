@@ -1,4 +1,4 @@
-package com.messenger.mand.Notifications;
+package com.messenger.mand.notifications;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -17,7 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.messenger.mand.Activities.ChatActivity;
+import com.messenger.mand.activities.ChatActivity;
 
 public class FirebaseMessaging extends FirebaseMessagingService {
 

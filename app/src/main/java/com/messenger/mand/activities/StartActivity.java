@@ -1,8 +1,7 @@
-package com.messenger.mand.Activities;
+package com.messenger.mand.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -11,14 +10,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.messenger.mand.Interactions.LanguageContextWrapper;
-import com.messenger.mand.Interactions.UserInteraction;
+import com.messenger.mand.interactions.LanguageContextWrapper;
+import com.messenger.mand.interactions.UserInteraction;
 import com.messenger.mand.R;
-
-import java.util.Locale;
 
 public class StartActivity extends AppCompatActivity {
 

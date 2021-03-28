@@ -1,4 +1,4 @@
-package com.messenger.mand.Interactions;
+package com.messenger.mand.interactions;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -51,7 +51,7 @@ public class DataInteraction {
 
     public static byte[] convertDrawableToByteArr(Bitmap bitmap, int quality) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+        bitmap.compress(Bitmap.CompressFormat.PNG, quality, baos);
         return baos.toByteArray();
     }
 }

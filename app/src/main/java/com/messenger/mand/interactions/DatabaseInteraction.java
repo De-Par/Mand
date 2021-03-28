@@ -1,4 +1,4 @@
-package com.messenger.mand.Interactions;
+package com.messenger.mand.interactions;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;

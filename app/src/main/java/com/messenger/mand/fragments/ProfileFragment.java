@@ -1,4 +1,4 @@
-package com.messenger.mand.Fragments;
+package com.messenger.mand.fragments;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -8,11 +8,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,11 +24,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.anstrontechnologies.corehelper.AnstronCoreHelper;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,35 +42,41 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.messenger.mand.Activities.EditProfileActivity;
-import com.messenger.mand.Activities.ZoomViewActivity;
-import com.messenger.mand.Interactions.UserInteraction;
-import static com.messenger.mand.Values.Sensor.*;
-import com.messenger.mand.Interactions.DataInteraction;
-import com.messenger.mand.Objects.User;
+import com.iceteck.silicompressorr.FileUtils;
+import com.messenger.mand.activities.EditProfileActivity;
+import com.messenger.mand.activities.ZoomImageActivity;
+import com.messenger.mand.interactions.UserInteraction;
+import static com.messenger.mand.values.Sensor.*;
+import com.messenger.mand.entities.User;
 import com.messenger.mand.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+import id.zelory.compressor.Compressor;
+
 import static android.app.Activity.RESULT_OK;
 
 public class ProfileFragment extends Fragment {
+    private final String TAG = ProfileFragment.class.toString();
 
     private CircleImageView imageProfile;
     private TextView userName;
 
     private DatabaseReference databaseReference;
-    private FirebaseUser firebaseUser;
 
     private StorageReference storageReference;
+    private AnstronCoreHelper coreHelper;
     private boolean isIcon;
     private StorageTask<UploadTask.TaskSnapshot> uploadTask;
     String[] galleryPermissions;
     String[] cameraPermissions;
     Uri imageUri;
+    String url_image = null;
+    Bitmap bitmap = null;
 
     private TextView email;
     private TextView id;
@@ -82,10 +86,6 @@ public class ProfileFragment extends Fragment {
     private TextView sex;
     private TextView aboutMe;
     private LottieAnimationView animationDone;
-
-    public ProfileFragment() {
-        //
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,10 +108,12 @@ public class ProfileFragment extends Fragment {
 
         animationDone = view.findViewById(R.id.lottieAnimationDone);
 
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        assert firebaseUser != null;
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").
                 child(firebaseUser.getUid());
         storageReference = FirebaseStorage.getInstance().getReference().child("Avatar_Images");
+        coreHelper = new AnstronCoreHelper(getContext());
 
         cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         galleryPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -141,8 +143,8 @@ public class ProfileFragment extends Fragment {
                 userName.setText(user.getName());
                 if (!user.getAvatar().equals("default") && isAdded() && !user.getAvatar().equals("")) {
                     try {
-                        Glide.with(requireContext().getApplicationContext()).
-                                load(user.getAvatar()).into(imageProfile);
+                        url_image = user.getAvatar();
+                        Glide.with(requireContext()).load(url_image).into(imageProfile);
                         isIcon = false;
                     } catch (Exception e) {
                         imageProfile.setImageResource(R.drawable.profile_image_default);
@@ -152,6 +154,7 @@ public class ProfileFragment extends Fragment {
                     imageProfile.setImageResource(R.drawable.profile_image_default);
                     isIcon = true;
                 }
+
                 email.setText(user.getEmail());
                 id.setText(user.getId());
                 dateCreation.setText(user.getDateCreation());
@@ -175,12 +178,10 @@ public class ProfileFragment extends Fragment {
             if (requestCode == IMAGE_PICK_STORAGE_CODE) {
                 assert data != null;
                 imageUri = data.getData();
-                uploadImageToProfile(imageUri);
-            }
-            if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-                uploadImageToProfile(imageUri);
-            }
-            if (uploadTask != null && uploadTask.isInProgress()) {
+                uploadImageToProfile();
+            } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
+                uploadImageToProfile();
+            } else if (uploadTask != null && uploadTask.isInProgress()) {
                 Toast.makeText(getContext(), R.string.upload, Toast.LENGTH_SHORT).show();
             }
         }
@@ -202,13 +203,10 @@ public class ProfileFragment extends Fragment {
             }
             break;
             case STORAGE_REQUEST_CODE: {
-                if (grantResults.length > 0) {
-                    boolean writeStorageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                    if (writeStorageAccepted) {
-                        pickFromGallery();
-                    } else {
-                        UserInteraction.showPopUpSnackBar(getString(R.string.error_smth), getView(), getContext());
-                    }
+                if (grantResults.length > 0 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    pickFromGallery();
+                } else {
+                    UserInteraction.showPopUpSnackBar(getString(R.string.error_smth), getView(), getContext());
                 }
             }
             break;
@@ -235,27 +233,24 @@ public class ProfileFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void uploadImageToProfile(Uri uri) {
+    private void uploadImageToProfile() {
         final Dialog progressDialog = new Dialog(getContext());
         progressDialog.setContentView(R.layout.progress_bar);
         Objects.requireNonNull(progressDialog.getWindow()).
                 setBackgroundDrawableResource(android.R.color.transparent);
         progressDialog.show();
 
-        if (uri != null) {
-            String imageName = new File(uri.getPath()).getName();
-            final StorageReference fileReference = storageReference.child(imageName);
-            fileReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+        if (imageUri != null) {
+            final StorageReference fileReference = storageReference.child(coreHelper.
+                    getFileNameFromUri(imageUri));
+            fileReference.putBytes(getBytesFromCompressedImage(imageUri)).addOnSuccessListener(taskSnapshot -> {
                 Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                while (!uriTask.isSuccessful());
-                Uri downloadUri = uriTask.getResult();
 
-                if (uriTask.isSuccessful() && downloadUri != null) {
-                    String mUri = Objects.requireNonNull(downloadUri).toString();
-                    databaseReference = FirebaseDatabase.getInstance().getReference()
-                            .child("Users").child(firebaseUser.getUid());
+                while (!uriTask.isSuccessful());  // waiting
+
+                if (uriTask.isSuccessful()) {
                     HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("avatar", mUri);
+                    hashMap.put("avatar", Objects.requireNonNull(uriTask.getResult()).toString());
                     databaseReference.updateChildren(hashMap);
                     successfulAnimation();
 
@@ -270,6 +265,29 @@ public class ProfileFragment extends Fragment {
         } else {
             progressDialog.dismiss();
         }
+    }
+
+    private byte[] getBytesFromCompressedImage(Uri uri) {
+        byte[] bytes = null;
+        File file = new File(FileUtils.getPath(requireContext(), uri));
+
+        try {
+            bitmap = new Compressor(requireContext()).
+                    setMaxHeight(200).
+                    setMaxWidth(200).
+                    setQuality(100).
+                    compressToBitmap(file);
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            bytes = byteArrayOutputStream.toByteArray();
+            bitmap.recycle();
+            byteArrayOutputStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
     private void alertDialogChoicer() {
@@ -294,7 +312,6 @@ public class ProfileFragment extends Fragment {
                     } else {
                         pickFromCamera();
                     }
-                    pickFromCamera();
                     break;
                 case 3:
                     deleteAvatar();
@@ -314,9 +331,7 @@ public class ProfileFragment extends Fragment {
 
         Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         camIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        if (camIntent.resolveActivity(requireContext().getPackageManager()) != null) {
-            startActivityForResult(camIntent, IMAGE_PICK_CAMERA_CODE);
-        }
+        startActivityForResult(camIntent, IMAGE_PICK_CAMERA_CODE);
     }
 
     private void pickFromGallery() {
@@ -328,30 +343,20 @@ public class ProfileFragment extends Fragment {
 
     private void zoomAvatar() {
         if (!isIcon) {
-            byte[] arr = DataInteraction.convertDrawableToByteArr(((BitmapDrawable) imageProfile.
-                    getDrawable()).getBitmap(), ORIGINAL);
-            startActivity(new Intent(getActivity(), ZoomViewActivity.class).putExtra("photo", arr));
+            startActivity(new Intent(getActivity(), ZoomImageActivity.class).putExtra("photo", url_image));
         } else {
-            startActivity(new Intent(getActivity(), ZoomViewActivity.class).putExtra("flag", true));
+            startActivity(new Intent(getActivity(), ZoomImageActivity.class).putExtra("icon", R.drawable.profile_image_default));
         }
     }
 
     private void deleteAvatar() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
-                .child("Users").child(firebaseUser.getUid());
-
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("avatar", "default");
-        reference.updateChildren(hashMap);
-
-//        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-//        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, profileUri);
-//        startActivityForResult(intent, 2222);
+        databaseReference.updateChildren(hashMap);
     }
 
     private boolean checkStoragePermission() {
-        return ContextCompat.checkSelfPermission(getContext(),
+        return ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == (PackageManager.PERMISSION_GRANTED);
     }
@@ -361,7 +366,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private boolean checkCameraPermission() {
-        boolean flag1 = ContextCompat.checkSelfPermission(getActivity(),
+        boolean flag1 = ContextCompat.checkSelfPermission(requireActivity(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == (PackageManager.PERMISSION_GRANTED);
         boolean flag2 = ContextCompat.checkSelfPermission(requireActivity(),

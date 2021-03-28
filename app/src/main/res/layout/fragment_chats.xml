@@ -6,16 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.messenger.mand.Fragments.ChatsFragment"
-    android:id="@+id/fragmentUsers">
+    tools:context="com.messenger.mand.fragments.ChatsFragment"
+    android:id="@+id/fragmentUsers"
+    android:forceDarkAllowed="true"
+    android:background="@color/white" >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clUsers"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:screenOrientation="portrait"
-        android:background="@color/white">
+        android:screenOrientation="portrait">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"

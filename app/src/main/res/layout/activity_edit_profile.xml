@@ -7,7 +7,7 @@
     android:forceDarkAllowed="true"
     android:background="@color/colorBackground"
     android:id="@+id/scrollEditProfile"
-    tools:context=".Activities.EditProfileActivity">
+    tools:context=".activities.EditProfileActivity">
 
     <LinearLayout
         android:id="@+id/constraintLayoutEdit"

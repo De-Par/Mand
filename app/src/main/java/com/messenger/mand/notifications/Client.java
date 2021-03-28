@@ -1,4 +1,4 @@
-package com.messenger.mand.Notifications;
+package com.messenger.mand.notifications;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

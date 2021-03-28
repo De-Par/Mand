@@ -1,12 +1,11 @@
-package com.messenger.mand.Fragments;
+package com.messenger.mand.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -38,19 +37,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import com.messenger.mand.Adapters.ChatAdapter;
-import com.messenger.mand.Interactions.UserInteraction;
-import com.messenger.mand.Interfaces.DataPasser;
-import static com.messenger.mand.Values.Navigation.*;
+import com.messenger.mand.adapters.ChatAdapter;
+import com.messenger.mand.interactions.UserInteraction;
+import com.messenger.mand.interfaces.DataPasser;
+import static com.messenger.mand.values.Navigation.*;
 
-import com.messenger.mand.Objects.Chat;
-import com.messenger.mand.Objects.User;
+import com.messenger.mand.entities.Chat;
+import com.messenger.mand.entities.User;
 import com.messenger.mand.R;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class ChatsFragment extends Fragment {
+    private final String TAG = ChatsFragment.class.toString();
 
     private ArrayList<User> mUsers;
     private ArrayList<String> usersList;
@@ -117,7 +117,12 @@ public class ChatsFragment extends Fragment {
                 userName.setText(user.getName());
 
                 if (!user.getAvatar().equals("default") && isAdded()) {
-                    Glide.with(view.getRootView()).load(user.getAvatar()).into(userPhoto);
+                    try {
+                        Glide.with(view.getRootView()).load(user.getAvatar()).into(userPhoto);
+                    } catch (Exception e) {
+                        userPhoto.setImageResource(R.drawable.profile_image_default);
+                        Log.e(TAG, e.toString());
+                    }
                 } else {
                     userPhoto.setImageResource(R.drawable.profile_image_default);
                 }

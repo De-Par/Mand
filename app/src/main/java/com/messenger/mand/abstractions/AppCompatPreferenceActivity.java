@@ -1,4 +1,4 @@
-package com.messenger.mand.Abstaractions;
+package com.messenger.mand.abstractions;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

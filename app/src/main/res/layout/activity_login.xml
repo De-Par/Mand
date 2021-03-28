@@ -10,7 +10,7 @@
     android:theme="@style/Theme.AppCompat.DayNight"
     android:background="@color/colorBackground"
     android:id="@+id/scrollLogin"
-    tools:context=".Activities.LoginActivity">
+    tools:context=".activities.LoginActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/LinearLayoutSignIn"

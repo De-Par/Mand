@@ -1,4 +1,4 @@
-package com.messenger.mand.objects;
+package com.messenger.mand.entities;
 
 public class User {
 

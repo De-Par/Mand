@@ -1,9 +1,10 @@
-package com.messenger.mand.Activities;
+package com.messenger.mand.activities;
 
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.anstrontechnologies.corehelper.AnstronCoreHelper;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,24 +36,28 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.messenger.mand.Adapters.MessageAdapter;
-import com.messenger.mand.Interactions.DataInteraction;
-import com.messenger.mand.Interactions.DatabaseInteraction;
-import com.messenger.mand.Interactions.UserInteraction;
-import static com.messenger.mand.Values.Sensor.*;
+import com.iceteck.silicompressorr.FileUtils;
+import com.messenger.mand.adapters.MessageAdapter;
+import com.messenger.mand.interactions.DataInteraction;
+import com.messenger.mand.interactions.DatabaseInteraction;
+import com.messenger.mand.interactions.UserInteraction;
+import static com.messenger.mand.values.Sensor.*;
 
-import com.messenger.mand.Objects.Message;
-import com.messenger.mand.Objects.User;
+import com.messenger.mand.entities.Message;
+import com.messenger.mand.entities.User;
 import com.messenger.mand.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import id.zelory.compressor.Compressor;
 
 public class ChatActivity extends AppCompatActivity {
+    private final String TAG = ChatActivity.class.toString();
 
     private MessageAdapter adapter;
     private final ArrayList<Message> messages = new ArrayList<>();
@@ -72,6 +78,7 @@ public class ChatActivity extends AppCompatActivity {
     private String recipientUserId;
     String recipientUserName;
     String[] galleryPermissions;
+    AnstronCoreHelper coreHelper;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -102,6 +109,7 @@ public class ChatActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
 
         galleryPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        coreHelper = new AnstronCoreHelper(getApplicationContext());
 
         messagesReference = database.getReference().child("Messages");
         useReference = database.getReference().child("Users").child(recipientUserId);
@@ -173,7 +181,7 @@ public class ChatActivity extends AppCompatActivity {
                     try {
                         Glide.with(getApplicationContext()).load(user.getAvatar()).into(avatar);
                     } catch (Exception e) {
-                        Log.e("AVATAR", e.getLocalizedMessage());
+                        Log.e(TAG, e.getLocalizedMessage());
                         avatar.setImageResource(R.drawable.profile_image_default);
                     }
                 } else {
@@ -209,8 +217,7 @@ public class ChatActivity extends AppCompatActivity {
                     if (writeStorageAccepted) {
                         pickFromGallery();
                     } else {
-                        UserInteraction.showPopUpSnackBar(getString(R.string.error_smth),
-                                getCurrentFocus(), getApplicationContext());
+                        UserInteraction.showPopUpSnackBar(getString(R.string.error_smth), getCurrentFocus(), getApplicationContext());
                     }
                 }
             }
@@ -306,13 +313,15 @@ public class ChatActivity extends AppCompatActivity {
 
         if (uri != null) {
             String imageName = new File(uri.getPath()).getName();
-            final StorageReference fileReference = chatImagesStorageReference.child(imageName);
-            fileReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+            final StorageReference fileReference = chatImagesStorageReference.child(coreHelper.
+                    getFileNameFromUri(uri));
+            fileReference.putBytes(getBytesFromCompressedImage(uri)).addOnSuccessListener(taskSnapshot -> {
                 Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+
                 while (!uriTask.isSuccessful());
-                Uri downloadUri = uriTask.getResult();
 
                 if (uriTask.isSuccessful()) {
+                    Uri downloadUri = uriTask.getResult();
                     assert downloadUri != null;
                     sendMessageToDB(firebaseUser.getUid(), recipientUserId, "",
                             downloadUri.toString(), DataInteraction.getTimeNow());
@@ -320,6 +329,7 @@ public class ChatActivity extends AppCompatActivity {
                     Toast.makeText(ChatActivity.this, R.string.error_smth, Toast.LENGTH_SHORT).show();
                 }
                 progressDialog.dismiss();
+                Toast.makeText(ChatActivity.this, R.string.successful, Toast.LENGTH_SHORT).show();
             }).addOnFailureListener(e -> {
                 Toast.makeText(ChatActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
@@ -327,6 +337,29 @@ public class ChatActivity extends AppCompatActivity {
         } else {
             progressDialog.dismiss();
         }
+    }
+
+    private byte[] getBytesFromCompressedImage(Uri uri) {
+        byte[] bytes = null;
+        File file = new File(FileUtils.getPath(getApplicationContext(), uri));
+
+        try {
+            Bitmap bitmap = new Compressor(getApplicationContext()).
+                    setMaxHeight(200).
+                    setMaxWidth(200).
+                    setQuality(100).
+                    compressToBitmap(file);
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            bytes = byteArrayOutputStream.toByteArray();
+            bitmap.recycle();
+            byteArrayOutputStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
     private void sendMessageToDB(final String sender, final String receiver, final String message,

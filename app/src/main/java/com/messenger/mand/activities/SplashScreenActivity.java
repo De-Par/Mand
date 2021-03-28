@@ -1,4 +1,4 @@
-package com.messenger.mand.Activities;
+package com.messenger.mand.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.messenger.mand.R;
-import static com.messenger.mand.Values.Animation.*;
+import static com.messenger.mand.values.Animation.*;
 
 public class SplashScreenActivity extends AppCompatActivity {
 

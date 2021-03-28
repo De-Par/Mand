@@ -1,4 +1,4 @@
-package com.messenger.mand.Values;
+package com.messenger.mand.values;
 
 public final class Navigation {
     // public static final String TAG = "LOG";

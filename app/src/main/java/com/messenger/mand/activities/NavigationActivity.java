@@ -1,4 +1,4 @@
-package com.messenger.mand.Activities;
+package com.messenger.mand.activities;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -23,13 +23,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
-import com.messenger.mand.Fragments.ChatsFragment;
-import com.messenger.mand.Fragments.ProfileFragment;
-import com.messenger.mand.Fragments.UsersFragment;
-import com.messenger.mand.Interactions.DataInteraction;
-import com.messenger.mand.Interactions.DatabaseInteraction;
-import com.messenger.mand.Interfaces.DataPasser;
-import static com.messenger.mand.Values.Navigation.*;
+import com.messenger.mand.fragments.ChatsFragment;
+import com.messenger.mand.fragments.ProfileFragment;
+import com.messenger.mand.fragments.UsersFragment;
+import com.messenger.mand.interactions.DataInteraction;
+import com.messenger.mand.interactions.DatabaseInteraction;
+import com.messenger.mand.interfaces.DataPasser;
+import static com.messenger.mand.values.Navigation.*;
 import com.messenger.mand.R;
 
 public class NavigationActivity extends AppCompatActivity implements DataPasser {
@@ -56,9 +56,9 @@ public class NavigationActivity extends AppCompatActivity implements DataPasser 
 
         try {
             position = getIntent().getStringExtra("position");
-            Log.e("POSITION", position);
+            Log.e("Position -----> ", position);
         } catch (Exception e) {
-            Log.e("POSITION", e.toString());
+            Log.e("Position -----> ", e.toString());
         }
 
         if (savedInstanceState == null && position == null) {

@@ -1,11 +1,9 @@
-package com.messenger.mand.Activities;
+package com.messenger.mand.activities;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
-import android.text.Spanned;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -20,9 +18,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.messenger.mand.Interactions.DataInteraction;
-import com.messenger.mand.Interactions.LanguageContextWrapper;
-import com.messenger.mand.Interactions.UserInteraction;
+import com.messenger.mand.interactions.DataInteraction;
+import com.messenger.mand.interactions.UserInteraction;
 import com.messenger.mand.R;
 
 import java.util.HashMap;
@@ -163,10 +160,10 @@ public class RegisterActivity extends AppCompatActivity {
         hashMap.put("email", firebaseUser.getEmail());
         hashMap.put("avatar", "default");
         hashMap.put("dateCreation", DataInteraction.getTimeNow());
-        hashMap.put("dateBirth", getString(R.string.no_info));
-        hashMap.put("phone", getString(R.string.no_info));
-        hashMap.put("sex", getString(R.string.no_info));
-        hashMap.put("aboutMe", getString(R.string.no_info));
+        hashMap.put("dateBirth", "");
+        hashMap.put("phone", "");
+        hashMap.put("sex", "");
+        hashMap.put("aboutMe", "");
         hashMap.put("status", "online");
         hashMap.put("searchName", username.toLowerCase());
 

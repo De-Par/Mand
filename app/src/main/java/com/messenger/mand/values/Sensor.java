@@ -1,4 +1,4 @@
-package com.messenger.mand.Values;
+package com.messenger.mand.values;
 
 public class Sensor {
     // requests

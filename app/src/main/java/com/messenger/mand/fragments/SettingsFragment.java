@@ -1,4 +1,4 @@
-package com.messenger.mand.Fragments;
+package com.messenger.mand.fragments;
 
 import android.os.Bundle;
 

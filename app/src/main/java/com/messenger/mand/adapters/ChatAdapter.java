@@ -1,4 +1,4 @@
-package com.messenger.mand.Adapters;
+package com.messenger.mand.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,14 +20,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.messenger.mand.Activities.ChatActivity;
-import com.messenger.mand.Objects.Message;
-import com.messenger.mand.Objects.User;
+import com.messenger.mand.activities.ChatActivity;
+import com.messenger.mand.entities.Message;
+import com.messenger.mand.entities.User;
 import com.messenger.mand.R;
 
 import java.util.ArrayList;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder> {
+    private final String TAG = ChatAdapter.class.toString();
 
     private final ArrayList<User> listOfUsers;
     private final Context context;
@@ -54,7 +55,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
             try {
                 Glide.with(context).load(user.getAvatar()).into(userViewHolder.avatar);
             } catch (Exception e) {
-                Log.e("AVATAR", e.getLocalizedMessage());
+                Log.e(TAG, e.getLocalizedMessage());
                 userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
             }
         } else {
