@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.security.KeyPairGeneratorSpec;
+import android.security.keystore.KeyProperties;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,14 +32,23 @@ import com.messenger.mand.entities.Chat;
 import com.messenger.mand.entities.User;
 import com.messenger.mand.R;
 
+import org.apache.commons.codec.binary.Base64;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.math.BigInteger;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
-import javax.crypto.SecretKey;
-
-import static com.messenger.mand.interactions.EncryptDecryptString.*;
+import javax.security.auth.x500.X500Principal;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
     private final String TAG = UserAdapter.class.toString();
@@ -52,13 +63,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     @NonNull
     @Override
-    public UserViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public final UserViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(context).inflate(R.layout.user_item, viewGroup,false);
         return new UserViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final UserViewHolder userViewHolder, int position) {
+    public final void onBindViewHolder(@NonNull final UserViewHolder userViewHolder, int position) {
         final User user = users.get(position);
         userViewHolder.user_name.setText(user.getName());
 
@@ -88,19 +99,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     @Override
-    public int getItemCount() {
+    public final int getItemCount() {
         return users.size();
     }
 
     private void isChatCreated(View v, User recipient) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("ChatsList");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("chats");
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int pos = -1;
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    Chat chat = ds.getValue(Chat.class);
+                    Chat chat = ds.child("info").getValue(Chat.class);
                     assert chat != null;
                     assert currentUser != null;
                     if ((chat.getInitiator().equals(currentUser.getUid()) && chat.getRecipient().
@@ -120,7 +131,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         });
     }
 
-    private void createChatDialog(View v, User user) {
+    private void createChatDialog(@NotNull View v, User user) {
         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), R.style.AlertDialogTheme);
         View view = LayoutInflater.from(v.getContext()).inflate(R.layout.chat_dialog,
                 v.findViewById(R.id.layoutDialogContainer));
@@ -138,9 +149,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
         view.findViewById(R.id.closeDialog).setOnClickListener(vi -> alertDialog.dismiss());
         view.findViewById(R.id.buttonCreateChat).setOnClickListener(vi -> {
-            gotoChat(user);
             alertDialog.dismiss();
-            sendListOfChatsToDataBase(user);
+            try {
+                sendListOfChatsToDataBase(user);
+                gotoChat(user);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         });
 
         if (alertDialog.getWindow() != null) {
@@ -151,24 +167,124 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     private void sendListOfChatsToDataBase(User recipient) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        SecretKey key = generateKey("AES");
+        if (firebaseUser != null) {
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().
+                    child("chats").child(generateOneToOneId(firebaseUser.getUid(), recipient.getId())).child("info");
 
-        assert firebaseUser != null;
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().
-                child("ChatsList").child(firebaseUser.getUid() + recipient.getId());
+            String publicKey = Base64.encodeBase64String(Objects.requireNonNull(initPublicKey(
+                    generateOneToOneId(recipient.getId(), firebaseUser.getUid()))));
 
-        HashMap<String, Object> chatsMap = new HashMap<>();
-        chatsMap.put("initiator", firebaseUser.getUid());
-        chatsMap.put("recipient", recipient.getId());
-        chatsMap.put("key", Arrays.toString(Objects.requireNonNull(key).getEncoded()));
+            HashMap<String, Object> chatMap = new HashMap<>();
+            chatMap.put("initiator", firebaseUser.getUid());
+            chatMap.put("recipient", recipient.getId());
+            chatMap.put("iniPublicKey", publicKey);
+            chatMap.put("recPublicKey", "");
 
-        databaseReference.updateChildren(chatsMap);
+            databaseReference.setValue(chatMap);
+        }
     }
 
-    private void gotoChat(User recipient) {
+    @Nullable
+    @SuppressWarnings("deprecation")
+    private byte[] initPublicKey(String alias) {
+        String uId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        try {
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+
+            PrivateKey privateKey;
+            PublicKey publicKey;
+
+            if (!keyStore.containsAlias(alias)) {
+                Calendar notBefore = Calendar.getInstance();
+                Calendar notAfter = Calendar.getInstance();
+                notAfter.add(Calendar.YEAR, 100);
+                KeyPairGeneratorSpec spec = new KeyPairGeneratorSpec.Builder(context)
+                        .setAlias(alias)
+                        .setKeyType(KeyProperties.KEY_ALGORITHM_RSA)
+                        .setKeySize(2048)
+                        .setSubject(new X500Principal("CN=test"))
+                        .setSerialNumber(BigInteger.ONE)
+                        .setStartDate(notBefore.getTime())
+                        .setEndDate(notAfter.getTime())
+                        .build();
+                KeyPairGenerator generator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, "AndroidKeyStore");
+                generator.initialize(spec);
+
+                KeyPair keyPair = generator.generateKeyPair();
+                publicKey = keyPair.getPublic();
+                privateKey = keyPair.getPrivate();
+            } else {
+                // Retrieve the keys
+                KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry)keyStore.getEntry(alias, null);
+                privateKey = privateKeyEntry.getPrivateKey();
+                publicKey = privateKeyEntry.getCertificate().getPublicKey();
+            }
+
+            Log.e(TAG, "private key = " + Arrays.toString(privateKey.getEncoded()));
+            Log.e(TAG, "public key = " + Arrays.toString(publicKey.getEncoded()));
+
+            return publicKey.getEncoded();
+
+//            // Encrypt the text
+//            String plainText = "This text is supposed to be a secret!";
+//            String dataDirectory = context.getApplicationInfo().dataDir;
+//            String filesDirectory = context.getFilesDir().getAbsolutePath();
+//            String encryptedDataFilePath = filesDirectory + File.separator + "keys";
+//
+//            Log.e(TAG, "plainText = " + plainText);
+//            Log.e(TAG, "dataDirectory = " + dataDirectory);
+//            Log.e(TAG, "filesDirectory = " + filesDirectory);
+//            Log.e(TAG, "encryptedDataFilePath = " + encryptedDataFilePath);
+
+//            Cipher inCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+//            inCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+//
+//            Cipher outCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+//            outCipher.init(Cipher.DECRYPT_MODE, privateKey);
+//
+//            CipherOutputStream cipherOutputStream =
+//                    new CipherOutputStream(
+//                            new FileOutputStream(encryptedDataFilePath), inCipher);
+//            cipherOutputStream.write(plainText.getBytes(StandardCharsets.UTF_8));
+//            cipherOutputStream.close();
+//
+//            CipherInputStream cipherInputStream =
+//                    new CipherInputStream(new FileInputStream(encryptedDataFilePath),
+//                            outCipher);
+//            byte [] roundTrippedBytes = new byte[1000];
+//
+//            int index = 0;
+//            int nextByte;
+//            while ((nextByte = cipherInputStream.read()) != -1) {
+//                roundTrippedBytes[index] = (byte)nextByte;
+//                index++;
+//            }
+//            String roundTrippedString = new String(roundTrippedBytes, 0, index, StandardCharsets.UTF_8);
+//            Log.e(TAG, "round tripped string = " + roundTrippedString);
+
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+        return null;
+    }
+
+
+
+    @NotNull
+    private String generateOneToOneId(@NotNull String first, @NotNull String second) {
+        if (first.hashCode() > second.hashCode()) {
+            return second + first;
+        } else {
+            return first + second;
+        }
+    }
+
+    private void gotoChat(@NotNull User recipient) {
         final Intent intent = new Intent(context, ChatActivity.class);
         intent.putExtra("user_id", recipient.getId());
         intent.putExtra("user_name", recipient.getName());
+        intent.putExtra("user_public_key", "");
         context.startActivity(intent);
     }
 

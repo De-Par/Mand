@@ -2,7 +2,6 @@ package com.messenger.mand.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,11 +18,11 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.messenger.mand.activities.ZoomImageActivity;
-import com.messenger.mand.interactions.DataInteraction;
 import com.messenger.mand.entities.Message;
 
-import static com.messenger.mand.values.Sensor.*;
 import com.messenger.mand.R;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public final ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         if (viewType == MSG_TYPE_MINE) {
             view = LayoutInflater.from(context).inflate(R.layout.my_message_item, parent, false);
@@ -52,24 +51,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public final void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Message message = listOfMessages.get(position);
 
         if (message.getImageUrl() == null) {
             holder.messageTextView.setVisibility(View.VISIBLE);
             holder.photoImageView.setVisibility(View.GONE);
-
-//            try {
-//                SecretKey myKey = generateKey("AES");
-//                Cipher cipher = Cipher.getInstance("AES");
-//                String decryptedData = decryptString(message.getText().getBytes(),
-//                        myKey, cipher);
-//
-//                message.setText(decryptedData);
-//
-//            } catch (Exception e) {
-//                Log.e("TAG", e.getLocalizedMessage());
-//            }
 
             if (message.getText().trim().length() > 30) {
                 holder.layoutMess.setOrientation(LinearLayout.VERTICAL);
@@ -103,7 +90,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public final int getItemViewType(int position) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         assert firebaseUser != null;
         if (listOfMessages.get(position).getSender().equals(firebaseUser.getUid())) {
@@ -113,7 +100,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     @Override
-    public int getItemCount() {
+    public final int getItemCount() {
         return listOfMessages.size();
     }
 
@@ -137,14 +124,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
     }
 
-    private String getTime(Message message) {  //  HH:mm
-        return message.getTime().substring(message.getTime().length() - 5);
+    @NotNull
+    private String getTime(@NotNull Message message) {  //  HH:mm
+        return message.getTime().substring(message.getTime().length() - 8,
+                message.getTime().length() - 3);
     }
 
     private void zoomImage(String url) {
         try {
-            context.startActivity(new Intent(context, ZoomImageActivity.class).putExtra("photo", url).
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            context.startActivity(new Intent(context, ZoomImageActivity.class).
+                    putExtra("photo", url).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (Exception e) {
             Log.e(TAG, e.getLocalizedMessage());
         }

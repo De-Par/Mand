@@ -17,6 +17,7 @@ import com.messenger.mand.interactions.UserInteraction;
 import com.messenger.mand.R;
 
 public class StartActivity extends AppCompatActivity {
+    private final String TAG = StartActivity.class.toString();
 
     private Button login, register;
     private TextView exit;
@@ -24,25 +25,23 @@ public class StartActivity extends AppCompatActivity {
     private byte stateButton = 0;
 
     @Override
-    protected void onStart() {
+    protected final void onStart() {
         super.onStart();
         FirebaseAuth auth = FirebaseAuth.getInstance();
 
-        if (auth.getCurrentUser() != null && UserInteraction.hasInternetConnection(getApplicationContext())) {
-            Intent intent = new Intent(StartActivity.this, NavigationActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
+        if (auth.getCurrentUser() != null &&
+                UserInteraction.hasInternetConnection(getApplicationContext())) {
+            gotoMainActivity();
         }
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-         if (!UserInteraction.hasInternetConnection(getApplicationContext())) {
-             Toast.makeText(StartActivity.this, R.string.internet_connection,
+        if (!UserInteraction.hasInternetConnection(getApplicationContext())) {
+            Toast.makeText(StartActivity.this, R.string.internet_connection,
                     Toast.LENGTH_LONG).show();
         }
 
@@ -91,12 +90,12 @@ public class StartActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void attachBaseContext(Context newBase) {
+    protected final void attachBaseContext(Context newBase) {
         super.attachBaseContext(LanguageContextWrapper.wrap(newBase, "ru"));
     }
 
     @Override
-    public void onBackPressed() {
+    public final void onBackPressed() {
         super.onBackPressed();
         Toast.makeText(StartActivity.this, R.string.bye,
                 Toast.LENGTH_SHORT).show();
@@ -107,5 +106,12 @@ public class StartActivity extends AppCompatActivity {
         Toast.makeText(StartActivity.this, R.string.bye,
                 Toast.LENGTH_SHORT).show();
         finishAffinity();
+    }
+
+    private void gotoMainActivity() {
+        Intent intent = new Intent(StartActivity.this, DashboardActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 }

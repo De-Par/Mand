@@ -27,7 +27,7 @@
             android:id="@+id/startAnimGreeting"
             android:layout_width="match_parent"
             android:layout_height="350dp"
-            android:layout_marginRight="25dp"
+            android:layout_marginEnd="25dp"
             android:layout_gravity="center_horizontal"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

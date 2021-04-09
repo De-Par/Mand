@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.messenger.mand.interactions.UserInteraction;
@@ -33,7 +32,7 @@ public class RecoverPasswordActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recover_password);
 
@@ -65,7 +64,7 @@ public class RecoverPasswordActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public final void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(RecoverPasswordActivity.this, LoginActivity.class);
         startActivity(intent);
@@ -88,10 +87,10 @@ public class RecoverPasswordActivity extends AppCompatActivity {
         });
     }
 
-    public void dialogWindow() {
+    public final void dialogWindow() {
         AlertDialog.Builder builder = new AlertDialog.Builder(RecoverPasswordActivity.this, R.style.AlertDialogTheme);
         View view = LayoutInflater.from(RecoverPasswordActivity.this).inflate(R.layout.error_dialog,
-                (ConstraintLayout) findViewById(R.id.layoutDialogContainer));
+                findViewById(R.id.layoutDialogContainer));
         builder.setView(view);
         ((TextView) view.findViewById(R.id.textTitle)).setText(getResources().getString(R.string.password_change));
         ((TextView) view.findViewById(R.id.textMessage)).setText(getResources().getString(R.string.password_change_question));
@@ -106,7 +105,10 @@ public class RecoverPasswordActivity extends AppCompatActivity {
             send_email.setText("");
         });
 
-        view.findViewById(R.id.buttonYes).setOnClickListener(v -> recoverEmailSuccessful());
+        view.findViewById(R.id.buttonYes).setOnClickListener(v -> {
+            alertDialog.dismiss();
+            recoverEmailSuccessful();
+        });
 
         if (alertDialog.getWindow() != null) {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));

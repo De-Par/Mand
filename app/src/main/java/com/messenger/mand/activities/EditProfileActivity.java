@@ -32,7 +32,7 @@ public class EditProfileActivity extends AppCompatActivity  {
     public EditProfileActivity() {}
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
@@ -53,9 +53,9 @@ public class EditProfileActivity extends AppCompatActivity  {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public final boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(getBaseContext(), NavigationActivity.class);
+            Intent intent = new Intent(getBaseContext(), DashboardActivity.class);
             intent.putExtra("position", LINK_PROFILE);
             startActivity(intent);
             finish();
@@ -64,21 +64,21 @@ public class EditProfileActivity extends AppCompatActivity  {
     }
 
     @Override
-    protected void onStart() {
-        DatabaseInteraction.pushUserStatus("online");
+    protected final void onStart() {
         super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
         DatabaseInteraction.pushUserStatus("online");
-        super.onResume();
     }
 
     @Override
-    protected void onPause() {
-        DatabaseInteraction.pushUserStatus(DataInteraction.getTimeNow());
+    protected final void onResume() {
+        super.onResume();
+        DatabaseInteraction.pushUserStatus("online");
+    }
+
+    @Override
+    protected final void onPause() {
         super.onPause();
+        DatabaseInteraction.pushUserStatus(DataInteraction.getTimeNow());
     }
 
     private void showEditDialog() {
@@ -88,13 +88,13 @@ public class EditProfileActivity extends AppCompatActivity  {
         builder.setItems(options, (dialogInterface, i) -> {
             switch (i) {
                 case 0:
-
+                    //
                     break;
                 case 1:
-
+                    //
                     break;
                 case 2:
-
+                    //
                     break;
 
             }
@@ -117,7 +117,7 @@ public class EditProfileActivity extends AppCompatActivity  {
 
         @NonNull
         @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        public final View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View row = inflater.inflate(R.layout.edit_profile_item, parent, false);
             TextView text = row.findViewById(R.id.item);

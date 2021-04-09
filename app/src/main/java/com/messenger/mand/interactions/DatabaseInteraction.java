@@ -10,7 +10,7 @@ public class DatabaseInteraction {
 
     public static void pushUserStatus(String status) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
-                .child("Users").child(Objects.requireNonNull(FirebaseAuth.getInstance().
+                .child("users").child(Objects.requireNonNull(FirebaseAuth.getInstance().
                         getCurrentUser()).getUid());
 
         HashMap<String, Object> hashMap = new HashMap<>();

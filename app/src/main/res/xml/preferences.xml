@@ -6,8 +6,8 @@
         app:title="@string/general">
 
         <ListPreference
-            android:key="language_preference"
-            android:title="Language"
+            android:key="language"
+            android:title="@string/language"
             android:defaultValue="ru"
             android:entries="@array/system_language"
             android:entryValues="@array/system_language_alias"/>
@@ -15,8 +15,8 @@
         <SwitchPreferenceCompat
             app:key="theme"
             app:defaultValue="false"
-            app:title="Theme"
-            app:summary="Enable night theme"/>
+            app:title="@string/theme"
+            app:summary="@string/enable_night_mode"/>
 
         <EditTextPreference
             app:title="Edit"

@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,6 +51,8 @@ import static com.messenger.mand.values.Sensor.*;
 import com.messenger.mand.entities.User;
 import com.messenger.mand.R;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
@@ -87,9 +90,10 @@ public class ProfileFragment extends Fragment {
     private TextView aboutMe;
     private LottieAnimationView animationDone;
 
+    @NotNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public final View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
+                                   Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_profile, container, false);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
@@ -110,7 +114,7 @@ public class ProfileFragment extends Fragment {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         assert firebaseUser != null;
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").
                 child(firebaseUser.getUid());
         storageReference = FirebaseStorage.getInstance().getReference().child("Avatar_Images");
         coreHelper = new AnstronCoreHelper(getContext());
@@ -172,7 +176,7 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public final void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == IMAGE_PICK_STORAGE_CODE) {
@@ -188,25 +192,33 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case CAMERA_REQUEST_CODE: {
-                if (grantResults.length > 0) {
-                    boolean camAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    boolean writeStorageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                    if (camAccepted && writeStorageAccepted) {
+                try {
+                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                            grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                         pickFromCamera();
                     } else {
                         UserInteraction.showPopUpSnackBar(getString(R.string.error_smth), getView(), getContext());
                     }
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                    Log.e(TAG, "Len of grantRes is " + grantResults.length);
                 }
             }
             break;
+
             case STORAGE_REQUEST_CODE: {
-                if (grantResults.length > 0 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    pickFromGallery();
-                } else {
-                    UserInteraction.showPopUpSnackBar(getString(R.string.error_smth), getView(), getContext());
+                try {
+                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        pickFromGallery();
+                    } else {
+                        UserInteraction.showPopUpSnackBar(getString(R.string.error_smth), getView(), getContext());
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                    Log.e(TAG, "Len of grantRes is " + grantResults.length);
                 }
             }
             break;
@@ -214,13 +226,13 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public final void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public final boolean onOptionsItemSelected(@NotNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menu_icon_edit) {
             gotoEditProfile();
@@ -233,6 +245,7 @@ public class ProfileFragment extends Fragment {
         startActivity(intent);
     }
 
+    @SuppressWarnings("deprecation")
     private void uploadImageToProfile() {
         final Dialog progressDialog = new Dialog(getContext());
         progressDialog.setContentView(R.layout.progress_bar);
@@ -246,7 +259,9 @@ public class ProfileFragment extends Fragment {
             fileReference.putBytes(getBytesFromCompressedImage(imageUri)).addOnSuccessListener(taskSnapshot -> {
                 Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
 
-                while (!uriTask.isSuccessful());  // waiting
+                while (!uriTask.isSuccessful()) {
+                    Log.v(TAG, "Waiting... While loading data");
+                }
 
                 if (uriTask.isSuccessful()) {
                     HashMap<String, Object> hashMap = new HashMap<>();
@@ -264,6 +279,7 @@ public class ProfileFragment extends Fragment {
             });
         } else {
             progressDialog.dismiss();
+            Log.e(TAG, "The value of uri is null !");
         }
     }
 
@@ -331,14 +347,24 @@ public class ProfileFragment extends Fragment {
 
         Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         camIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(camIntent, IMAGE_PICK_CAMERA_CODE);
+
+        try {
+            startActivityForResult(camIntent, IMAGE_PICK_CAMERA_CODE);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     private void pickFromGallery() {
         Intent galleryIntent = new Intent();
         galleryIntent.setAction(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
-        startActivityForResult(galleryIntent, IMAGE_PICK_STORAGE_CODE);
+
+        try {
+            startActivityForResult(galleryIntent, IMAGE_PICK_STORAGE_CODE);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     private void zoomAvatar() {

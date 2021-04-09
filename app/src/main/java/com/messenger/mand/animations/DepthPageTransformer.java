@@ -4,6 +4,8 @@ import android.view.View;
 
 import androidx.viewpager2.widget.ViewPager2;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Google Developers, https://developers.google.com/
  */
@@ -12,7 +14,7 @@ public class DepthPageTransformer implements ViewPager2.PageTransformer {
 
    private static final float MIN_SCALE = 0.75f;
 
-   public void transformPage(View view, float position) {
+   public final void transformPage(@NotNull View view, float position) {
        int pageWidth = view.getWidth();
 
        if (position < -1) {    // This page is way off-screen to the left.

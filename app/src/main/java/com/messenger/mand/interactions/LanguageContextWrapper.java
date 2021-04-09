@@ -6,6 +6,9 @@ import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.os.Build;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Locale;
 
 public class LanguageContextWrapper extends ContextWrapper {
@@ -14,10 +17,11 @@ public class LanguageContextWrapper extends ContextWrapper {
         super(context);
     }
 
-    @SuppressWarnings("deprecation")
-    public static ContextWrapper wrap(Context context, String language) {
+    @NotNull
+    @Contract("_, _ -> new")
+    public static ContextWrapper wrap(@NotNull Context context, @NotNull String language) {
         Configuration config = context.getResources().getConfiguration();
-        Locale sysLocale = null;
+        Locale sysLocale;
         sysLocale = getSystemLocale(config);
         if (!language.equals("") && !sysLocale.getLanguage().equals(language)) {
             Locale locale = new Locale(language);
@@ -28,32 +32,25 @@ public class LanguageContextWrapper extends ContextWrapper {
         return new LanguageContextWrapper(context);
     }
 
+    @Contract(pure = true)
     @SuppressWarnings("deprecation")
-    public static Locale getSystemLocaleLegacy(Configuration config){
+    public static Locale getSystemLocaleLegacy(@NotNull Configuration config){
         return config.locale;
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    public static Locale getSystemLocale(Configuration config){
+    public static Locale getSystemLocale(@NotNull Configuration config){
         return config.getLocales().get(0);
     }
 
     @SuppressWarnings("deprecation")
-    public static void setSystemLocaleLegacy(Configuration config, Locale locale){
+    public static void setSystemLocaleLegacy(@NotNull Configuration config, Locale locale){
         config.locale = locale;
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    public static void setSystemLocale(Configuration config, Locale locale){
+    public static void setSystemLocale(@NotNull Configuration config, Locale locale){
         config.setLocale(locale);
     }
-
-//        Locale locale = new Locale("en");
-//        Locale.setDefault(locale);
-//        Configuration config = getBaseContext().getResources().getConfiguration();
-//        config.setLocale(locale);
-//        getBaseContext().getResources().updateConfiguration(config,
-//                getBaseContext().getResources().getDisplayMetrics());
-
 
 }

@@ -12,6 +12,7 @@ import com.messenger.mand.R
 
 class ZoomImageActivity : AppCompatActivity() {
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -22,6 +22,8 @@ import com.messenger.mand.interactions.DataInteraction;
 import com.messenger.mand.interactions.UserInteraction;
 import com.messenger.mand.R;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -30,14 +32,14 @@ import java.util.regex.Pattern;
 public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
-    private DatabaseReference reference;
+    private DatabaseReference userReference;
 
     private EditText password, repeatPassword, name, email;
     private Button RegisterButton;
     private Animation butt;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected final void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
@@ -47,7 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        reference = FirebaseDatabase.getInstance().getReference().child("Users");
+        userReference = FirebaseDatabase.getInstance().getReference().child("users");
         auth = FirebaseAuth.getInstance();
 
         email = findViewById(R.id.emailEditText);
@@ -107,7 +109,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public final void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(RegisterActivity.this, StartActivity.class);
         startActivity(intent);
@@ -132,11 +134,10 @@ public class RegisterActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
                         FirebaseUser firebaseUser = auth.getCurrentUser();
                         assert firebaseUser != null;
-                        final String id = firebaseUser.getUid();
-                        reference = FirebaseDatabase.getInstance().getReference("Users").child(id);
+                        final String uid = firebaseUser.getUid();
 
-                        reference.setValue(createUserMap(id, username, firebaseUser)).addOnCompleteListener(task1 -> {
-                            Intent intent = new Intent(RegisterActivity.this, NavigationActivity.class);
+                        userReference.child(uid).setValue(createUserMap(uid, username, firebaseUser)).addOnCompleteListener(task1 -> {
+                            Intent intent = new Intent(RegisterActivity.this, DashboardActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             finish();
@@ -152,7 +153,8 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private HashMap<String, String> createUserMap(String id, String username, FirebaseUser firebaseUser) {
+    @NotNull
+    private HashMap<String, String> createUserMap(String id, String username, @NotNull FirebaseUser firebaseUser) {
         HashMap<String, String> hashMap = new HashMap<>();
 
         hashMap.put("id", id);

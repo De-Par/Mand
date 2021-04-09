@@ -46,14 +46,16 @@ import com.messenger.mand.entities.Chat;
 import com.messenger.mand.entities.User;
 import com.messenger.mand.R;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class ChatsFragment extends Fragment {
     private final String TAG = ChatsFragment.class.toString();
 
-    private ArrayList<User> mUsers;
-    private ArrayList<String> usersList;
+    private ArrayList<User> usersList;
+    private ArrayList<String> identifiersList;
     private RecyclerView recyclerView;
     private ChatAdapter chatAdapter;
     private TextView noSearch;
@@ -72,9 +74,10 @@ public class ChatsFragment extends Fragment {
     private FirebaseUser firebaseUser;
     DataPasser dataPasser;
 
+    @NotNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public final View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
+                                   Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
         recyclerView = view.findViewById(R.id.userListRecyclerView);
@@ -101,13 +104,13 @@ public class ChatsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        identifiersList = new ArrayList<>();
         usersList = new ArrayList<>();
-        mUsers = new ArrayList<>();
 
         gotoProfile.setOnClickListener(v -> passData(LINK_PROFILE));
 
         assert firebaseUser != null;
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").
                 child(firebaseUser.getUid());
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -116,12 +119,12 @@ public class ChatsFragment extends Fragment {
                 assert user != null;
                 userName.setText(user.getName());
 
-                if (!user.getAvatar().equals("default") && isAdded()) {
+                if (user.getAvatar() != null && !user.getAvatar().equals("default") && isAdded()) {
                     try {
                         Glide.with(view.getRootView()).load(user.getAvatar()).into(userPhoto);
                     } catch (Exception e) {
                         userPhoto.setImageResource(R.drawable.profile_image_default);
-                        Log.e(TAG, e.toString());
+                        Log.e(TAG, "Setting user's avatar -> " + e.toString());
                     }
                 } else {
                     userPhoto.setImageResource(R.drawable.profile_image_default);
@@ -137,28 +140,27 @@ public class ChatsFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
 
-        DatabaseReference chatsRef = FirebaseDatabase.getInstance().getReference().child("ChatsList");
+        DatabaseReference chatsRef = FirebaseDatabase.getInstance().getReference().child("chats");
         chatsRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                usersList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
-
-                    assert chat != null;
-                    if (chat.getRecipient().equals(firebaseUser.getUid())) {
-                        usersList.add(chat.getInitiator());
-                    }
-                    if (chat.getInitiator().equals(firebaseUser.getUid())) {
-                        usersList.add(chat.getRecipient());
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                identifiersList.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Chat chat = ds.child("info").getValue(Chat.class);
+                    if (chat != null) {
+                        if (chat.getRecipient().equals(firebaseUser.getUid())) {
+                            identifiersList.add(chat.getInitiator());
+                        }
+                        if (chat.getInitiator().equals(firebaseUser.getUid())) {
+                            identifiersList.add(chat.getRecipient());
+                        }
                     }
                 }
                 readChats();
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
 
         changAnimIn.setAnimationListener(new Animation.AnimationListener() {
@@ -186,6 +188,7 @@ public class ChatsFragment extends Fragment {
             fab.startAnimation(fbAnim);
             if (isSearch) {
                 searchLayout.startAnimation(changAnimIn);
+                etSearch.setText("");
                 isSearch = false;
             } else {
                 searchLayout.startAnimation(changAnimOut);
@@ -226,86 +229,89 @@ public class ChatsFragment extends Fragment {
 //    }
 
     @Override
-    public void onAttach(@NonNull Context context) {
+    public final void onAttach(@NonNull Context context) {
         super.onAttach(context);
         dataPasser = (DataPasser) context;
     }
 
-    public void passData(String data) {
+    public final void passData(String data) {
         dataPasser.onDataPass(data);
     }
 
     private void readChats() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    User user = ds.getValue(User.class);
-                    for (String id : usersList) {
-                        assert user != null;
-                        if (user.getId().equals(id)) {
-                            mUsers.add(user);
+                if (isAdded()) {
+                    usersList.clear();
+                    User user;
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        user = ds.getValue(User.class);
+                        if (!identifiersList.isEmpty()) {
+                            for (String id : identifiersList) {
+                                if (user != null && user.getId().equals(id)) {
+                                    usersList.add(user);
+                                }
+                            }
                         }
                     }
-                }
 
-                fab.setEnabled(!mUsers.isEmpty());
-                animationNobody.setSpeed(1.2f);
+                    fab.setEnabled(!usersList.isEmpty());
+                    animationNobody.setSpeed(1.2f);
 
-                if (mUsers.isEmpty()) {
-                    noChats.setVisibility(View.VISIBLE);
-                    animationNobody.setVisibility(View.VISIBLE);
-                    animationNobody.playAnimation();
-                } else {
-                    noChats.setVisibility(View.GONE);
-                    animationNobody.setVisibility(View.GONE);
-                    animationNobody.pauseAnimation();
+                    if (usersList.isEmpty()) {
+                        noChats.setVisibility(View.VISIBLE);
+                        animationNobody.setVisibility(View.VISIBLE);
+                        animationNobody.playAnimation();
+                    } else {
+                        noChats.setVisibility(View.GONE);
+                        animationNobody.setVisibility(View.GONE);
+                        animationNobody.pauseAnimation();
+                    }
+                    chatAdapter = new ChatAdapter(requireContext(), usersList);
+                    recyclerView.setAdapter(chatAdapter);
                 }
-                chatAdapter = new ChatAdapter(getContext(), mUsers);
-                recyclerView.setAdapter(chatAdapter);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
 
     }
 
     private void searchUsersByCharacter(String character) {
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Query query = FirebaseDatabase.getInstance().getReference().child("Users").orderByChild("searchName")
+        Query query = FirebaseDatabase.getInstance().getReference().child("users").orderByChild("searchName")
                 .startAt(character).endAt(character + "\uf8ff");
-
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
                 if (isAdded()) {
+                    usersList.clear();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         User user = ds.getValue(User.class);
                         assert user != null;
                         assert firebaseUser != null;
                         if (!user.getId().equals(firebaseUser.getUid())) {
-                            mUsers.add(user);
+                            usersList.add(user);
                         }
                     }
-                }
-                chatAdapter = new ChatAdapter(getContext(), mUsers);
-                recyclerView.setAdapter(chatAdapter);
 
-                if (etSearch.getText().toString().trim().equals("")) {
-                    readChats();
-                    recyclerView.setVisibility(View.VISIBLE);
-                    noSearch.setVisibility(View.GONE);
-                } else if (mUsers.isEmpty()) {
-                    noSearch.setVisibility(View.VISIBLE);
-                    recyclerView.setVisibility(View.GONE);
-                } else {
-                    recyclerView.setVisibility(View.VISIBLE);
-                    noSearch.setVisibility(View.GONE);
+                    chatAdapter = new ChatAdapter(requireContext(), usersList);
+                    recyclerView.setAdapter(chatAdapter);
+
+                    if (etSearch.getText().toString().trim().equals("")) {
+                        usersList.clear();
+                        recyclerView.setVisibility(View.VISIBLE);
+                        noSearch.setVisibility(View.GONE);
+                        readChats();
+                    } else if (usersList.isEmpty()) {
+                        noSearch.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                    } else {
+                        recyclerView.setVisibility(View.VISIBLE);
+                        noSearch.setVisibility(View.GONE);
+                    }
                 }
             }
 

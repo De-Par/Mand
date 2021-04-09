@@ -1,0 +1,112 @@
+<resources>
+    <string name="app_name">Mand</string>
+    <string name="yes">Oui</string>
+    <string name="no">Annuler</string>
+    <string name="ok">OK</string>
+    <string name="login">CONNEXION</string>
+    <string name="register">S\'INSCRIRE</string>
+    <string name="exit">Quitter</string>
+    <string name="login_text">Connectez-vous à votre compte:</string>
+    <string name="register_text">Créer un nouveau compte:</string>
+    <string name="password">Mot de passe:</string>
+    <string name="email">Email:</string>
+    <string name="phone">Téléphone:</string>
+    <string name="phone_edit">changer de téléphone</string>
+    <string name="about_yourself">À propos de vous:</string>
+    <string name="about_yourself_edit">modifier le statut</string>
+    <string name="sex">Genre:</string>
+    <string name="sex_edit">changer de gender</string>
+    <string name="general">Généralités</string>
+    <string name="additional">Supplémentaire</string>
+    <string name="dateBirth">Anniversaire:</string>
+    <string name="dateBirth_edit">modifier la date de naissance</string>
+    <string name="confirm_password">Confirmer le mot de passe:</string>
+    <string name="nickname">Nom utilisateur:</string>
+    <string name="nickname_edit">modifier le nom d\'utilisateur</string>
+    <string name="greeting">Bonjour</string>
+    <string name="users">Utilisateurs</string>
+    <string name="profile">Profil</string>
+    <string name="profile_inf">Profil:</string>
+    <string name="chats">Discussions</string>
+    <string name="dark_theme">Thème sombre</string>
+    <string name="light_theme">Thème lumineux</string>
+    <string name="tab_theme">Modifier le thème_onglet</string>
+    <string name="choose_avatar">Choisir un avatar</string>
+    <string name="logout">Déconnexion:</string>
+    <string name="logout_text">Êtes-vous sûr de vouloir vous déconnecter?</string>
+    <string name="to_delete">Supprimer le message:</string>
+    <string name="delete_text">Êtes-vous sûr de vouloir supprimer ce message?</string>
+    <string name="deleted">Supprimé</string>
+    <string name="message">Message…</string>
+    <string name="bye">Au revoir!</string>
+    <string name="successful">Réussite</string>
+    <string name="auth_fail">Échec de l\'authentification! Peut-être qu\'un utilisateur avec un tel courrier existe.</string>
+    <string name="auth_fail_short">Échec de l\'authentification.</string>
+    <string name="auth_suc">Authentification réussie.</string>
+    <string name="error_base">Échec de l\'authentification! Il n\'existe pas d\'utilisateur de ce type dans la base de données.</string>
+    <string name="error_smth">Erreur</string>
+    <string name="error_email">Erreur! Un utilisateur avec un tel e-mail n\'existe pas dans la base de données.</string>
+    <string name="no_image_select">Aucune image sélectionnée</string>
+    <string name="input_fields">S\'il vous plaît, remplissez tous les articles!</string>
+    <string name="input_email">S\'il vous plaît, entrez votre email!</string>
+    <string name="password_min">Le mot de passe doit contenir au moins 7 caractères!</string>
+    <string name="password_max">Les mots de passe ne doivent pas dépasser 34 caractères!</string>
+    <string name="password_match">Les mots de passe ne correspondent pas!</string>
+    <string name="input_name">Veuillez entrer votre pseudo!</string>
+    <string name="name_max">Désolé, votre pseudo ne doit pas dépasser 20 caractères!</string>
+    <string name="new_mess_from">Nouveau message de </string>
+    <string name="click_to">Cliquez pour lire le message</string>
+    <string name="settings">Paramètres</string>
+    <string name="soon">Quelque chose va bientôt apparaître ici…</string>
+    <string name="internet_connection">Une erreur s\'est produite lors du chargement des données. Vérifiez votre connexion Internet.</string>
+    <string name="upload">Téléchargement en cours…</string>
+    <string name="search">Rechercher</string>
+    <string name="noUsers">Étrange, mais aucun nouvel utilisateur n\'a été trouvé…</string>
+    <string name="noChats">Hmm… Vous n\'avez pas commencé à discuter avec quelqu\'un récemment. Démarrez une nouvelle conversation dans l\'onglet \"Utilisateurs\" !</string>
+    <string name="noSearch">L\'utilisateur portant le nom donné n\'existe pas dans la base de données.</string>
+    <string name="Seen">Vu</string>
+    <string name="Delivered">Livré</string>
+    <string name="addInf">Informations supplémentaires:</string>
+    <string name="dateCR">Date d\'enregistrement:</string>
+    <string name="forgotPassword">Mot de passe oublié ?</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="title_reset">Entrez votre email pour réinitialiser votre mot de passe :</string>
+    <string name="check_email">Réussite! Veuillez vérifier votre boîte aux lettres.</string>
+    <string name="password_change">Modifier le mot de passe:</string>
+    <string name="password_change_question">En cliquant sur OUI, vous acceptez de vous envoyer une lettre contenant des instructions supplémentaires pour changer le mot de passe.</string>
+    <string name="you">Vous :</string>
+    <string name="photo">📷 photo</string>
+    <string name="null_message">Vous ne pouvez pas envoyer un message vide.</string>
+    <string name="open_photo">Ouvrir la photo</string>
+    <string name="change_photo">Modifier la photo</string>
+    <string name="delete_photo">Supprimer la photo</string>
+    <string name="take_photo">Prendre une photo</string>
+    <string name="cancel">Annuler</string>
+    <string name="back">Retour</string>
+    <string name="at">à</string>
+    <string name="id">ID:</string>
+    <string name="sign_google">Se connecter avec Google</string>
+    <string name="online">en ligne</string>
+    <string name="lastSeen">Dernière vue</string>
+    <string name="no_info">...</string>
+    <string name="start_chatting_title">Créer une conversation</string>
+    <string name="start">commencer</string>
+    <string name="start_chatting_q">Créer un nouveau chat avec un tel utilisateur?</string>
+
+    <string-array name="system_language">
+        <item>Russian</item>
+        <item>English</item>
+        <item>French</item>
+    </string-array>
+
+    <string-array name="system_language_alias">
+        <item>"ru"</item>
+        <item>"en"</item>
+        <item>"fr"</item>
+    </string-array>
+
+    <string name="language">Langue</string>
+    <string name="theme">Thème</string>
+    <string name="enable_night_mode">Activer le thème de nuit</string>
+
+</resources>

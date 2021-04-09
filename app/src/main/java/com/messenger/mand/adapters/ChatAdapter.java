@@ -25,6 +25,8 @@ import com.messenger.mand.entities.Message;
 import com.messenger.mand.entities.User;
 import com.messenger.mand.R;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder> {
@@ -41,14 +43,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
 
     @NonNull
     @Override
-    public UserViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public final UserViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(context).inflate(R.layout.chat_item, viewGroup, false);
         return new UserViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final UserViewHolder userViewHolder, int position) {
+    public final void onBindViewHolder(@NonNull final UserViewHolder userViewHolder, int position) {
         final User user = listOfUsers.get(position);
+        final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         userViewHolder.user_name.setText(user.getName());
 
         if (!user.getAvatar().equals("default") && !user.getAvatar().equals("")) {
@@ -62,7 +65,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
             userViewHolder.avatar.setImageResource(R.drawable.profile_image_default);
         }
 
-        displayLastMessage(user.getId(), userViewHolder.last_message, user);
+        if (currentUser != null) {
+            displayLastMessage(userViewHolder.last_message, currentUser.getUid(), user);
+        }
 
         if (user.getStatus().equals("online")) {
             userViewHolder.onlineIndication.setVisibility(View.VISIBLE);
@@ -79,7 +84,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
     }
 
     @Override
-    public int getItemCount() {
+    public final int getItemCount() {
         return listOfUsers.size();
     }
 
@@ -99,23 +104,24 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
         }
     }
 
-    private void displayLastMessage(final String userId, final TextView lastMessage, final User user) {
+    private void displayLastMessage(final TextView lastMessage, @NotNull final String currentUserId, @NotNull User user) {
         finalText = "default";
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
-        reference.child("Messages").addValueEventListener(new ValueEventListener() {
+        String oneToOneId = currentUserId.hashCode() > user.getId().hashCode() ?
+                user.getId() + currentUserId : currentUserId + user.getId();
+
+        reference.child("chats").child(oneToOneId).child("data/messages").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Message message = snapshot.getValue(Message.class);
 
-                    if ((message != null && firebaseUser != null) && ((message.getRecipient().
-                            equals(firebaseUser.getUid()) && message.getSender().equals(userId)) ||
-                            (message.getRecipient().equals(userId) && message.getSender().
-                                    equals(firebaseUser.getUid())))) {
+                    if (message != null && (message.getRecipient().equals(currentUserId) &&
+                            message.getSender().equals(user.getId()) || message.getRecipient().equals(user.getId()) &&
+                            message.getSender().equals(currentUserId))) {
 
-                        finalText = messageFormation(message, firebaseUser, user);
+                        finalText = identifyingMessageSender(message, currentUserId) + defineMessageType(message);
                     }
                 }
                 if (finalText.equals("default")) {
@@ -126,30 +132,27 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserViewHolder
                 finalText = "default";
             }
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
 
-    private String messageFormation(Message message, FirebaseUser fUser, User u) {
-        return identifyingMessageSender(message, fUser.getUid(), u) + defineMessageType(message);
-    }
-
-    private String identifyingMessageSender(Message message, String currentId, User user) {
+    @NotNull
+    private String identifyingMessageSender(@NotNull Message message, String currentId) {
         if (message.getSender().equals(currentId)) {
             return context.getString(R.string.you) + " ";
         }
         return "";
     }
 
-    private String defineMessageType(Message message) {
+    private String defineMessageType(@NotNull Message message) {
         if (message.getText().trim().length() != 0) {
             return message.getText().trim();
         } 
         return context.getString(R.string.photo);
     }
 
-    private String abbreviateLongMessage(String text) {
+    @NotNull
+    private String abbreviateLongMessage(@NotNull String text) {
         int maxLengthStroke = 38;
         if (text.trim().length() > maxLengthStroke) {
             return text.substring(0, maxLengthStroke) + "…";

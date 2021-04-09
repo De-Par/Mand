@@ -19,6 +19,7 @@
     </queries>
 
     <application
+        android:name=".core.App"
         android:allowBackup="true"
         android:configChanges="locale|layoutDirection|orientation|colorMode"
         android:fullBackupContent="true"
@@ -36,7 +37,6 @@
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -44,12 +44,12 @@
             android:name=".activities.StartActivity"
             android:parentActivityName=".activities.SplashScreenActivity" />
         <activity
-            android:name=".activities.NavigationActivity"
+            android:name=".activities.DashboardActivity"
             android:parentActivityName=".activities.StartActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".activities.ChatActivity"
-            android:parentActivityName=".activities.NavigationActivity"
+            android:parentActivityName=".activities.DashboardActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".activities.RecoverPasswordActivity"
@@ -57,7 +57,7 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".activities.SettingsActivity"
-            android:parentActivityName=".activities.NavigationActivity"
+            android:parentActivityName=".activities.DashboardActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".activities.RegisterActivity"
@@ -69,26 +69,33 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".activities.ZoomImageActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_fullscreen" />
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
         <activity
             android:name=".activities.EditProfileActivity"
-            android:parentActivityName=".activities.NavigationActivity"
+            android:parentActivityName=".activities.DashboardActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
 
         <service
-            android:name=".notifications.FirebaseMessaging"
-            android:enabled="true"
-            android:exported="false"
-            android:stopWithTask="false">
+            android:name=".notifications.FirebaseMessService"
+            android:stopWithTask="false"
+            android:exported="false">
             <intent-filter>
+
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/app_icon" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
+        <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
     </application>
 
 </manifest>

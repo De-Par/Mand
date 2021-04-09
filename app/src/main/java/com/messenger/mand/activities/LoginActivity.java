@@ -32,6 +32,8 @@ import com.messenger.mand.interactions.UserInteraction;
 import com.messenger.mand.R;
 import com.shobhitpuri.custombuttons.GoogleSignInButton;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -49,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -118,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public final void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -132,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public final void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(LoginActivity.this, StartActivity.class);
         startActivity(intent);
@@ -152,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     if (task.isSuccessful()) {
                         Intent intent = new Intent(LoginActivity.this,
-                                NavigationActivity.class);
+                                DashboardActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
@@ -185,7 +187,8 @@ public class LoginActivity extends AppCompatActivity {
                         assert user != null;
                         String id = user.getUid();
                         DatabaseReference reference = FirebaseDatabase.getInstance().
-                                getReference().child("Users").child(id);
+                                getReference().child("users").child(id);
+
                         boolean isNewer = Objects.requireNonNull(Objects.requireNonNull(task.getResult()).
                                 getAdditionalUserInfo()).isNewUser();
 
@@ -203,7 +206,8 @@ public class LoginActivity extends AppCompatActivity {
                         getWindow().getCurrentFocus(), getApplicationContext()));
     }
 
-    private HashMap<String, Object> createUserMap(String id, String username, FirebaseUser firebaseUser) {
+    @NotNull
+    private HashMap<String, Object> createUserMap(String id, String username, @NotNull FirebaseUser firebaseUser) {
         HashMap<String, Object> hashMap = new HashMap<>();
 
         hashMap.put("id", id);
@@ -223,7 +227,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void gotoMainActivity() {
         Intent intent = new Intent(LoginActivity.this,
-                NavigationActivity.class);
+                DashboardActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();

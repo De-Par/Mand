@@ -20,7 +20,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,13 +42,15 @@ import com.messenger.mand.entities.User;
 import static com.messenger.mand.values.Navigation.*;
 import com.messenger.mand.R;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class UsersFragment extends Fragment {
     private final String TAG = UsersFragment.class.toString();
 
-    private ArrayList<User> userArrayList;
+    private ArrayList<User> usersList;
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
     private TextView noUsers;
@@ -63,13 +64,16 @@ public class UsersFragment extends Fragment {
     private Animation fbAnim;
 
     private boolean isSearch = false;
-    private DataPasser dataPasser;
+    DataPasser dataPasser;
+    FirebaseUser fUser;
 
+    @NotNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public final View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
+                                   Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_users, container, false);
+
         recyclerView = view.findViewById(R.id.userListRecyclerView);
         noUsers = view.findViewById(R.id.noUsers);
         noSearch = view.findViewById(R.id.noSearch);
@@ -79,8 +83,10 @@ public class UsersFragment extends Fragment {
         View gotoProfile = view.findViewById(R.id.clickableZone);
         ImageView userPhoto = view.findViewById(R.id.profile_image);
         TextView userName = view.findViewById(R.id.username);
-
         Toolbar toolbar = view.findViewById(R.id.toolbar);
+
+        fUser = FirebaseAuth.getInstance().getCurrentUser();
+
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("");
 
@@ -90,11 +96,12 @@ public class UsersFragment extends Fragment {
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        if (userArrayList == null) {
-            userArrayList = new ArrayList<>();
+
+        if (usersList == null)
+        {
+            usersList = new ArrayList<>();
         }
 
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         readUsers();
 
         gotoProfile.setOnClickListener(v -> passData(LINK_PROFILE));
@@ -120,6 +127,7 @@ public class UsersFragment extends Fragment {
             fab.startAnimation(fbAnim);
             if (isSearch) {
                 searchLayout.startAnimation(changAnimIn);
+                etSearch.setText("");
                 isSearch = false;
             } else {
                 searchLayout.startAnimation(changAnimOut);
@@ -149,8 +157,8 @@ public class UsersFragment extends Fragment {
             }
         });
 
-        assert firebaseUser != null;
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseUser.getUid());
+        assert fUser != null;
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(fUser.getUid());
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -190,58 +198,52 @@ public class UsersFragment extends Fragment {
 //    }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public final boolean onOptionsItemSelected(@NotNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.menu_icon_search) {
-            //passData(Constants.LINK_USERS);
-
-        }
+//        if (id == R.id.menu_icon_search) {
+//            passData(Navigation.LINK_USERS);
+//        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
+    public final void onAttach(@NonNull Context context) {
         super.onAttach(context);
         dataPasser = (DataPasser) context;
     }
 
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        passData(LINK_CHATS);
-//    }
-
-    public void passData(String data) {
+    public final void passData(String data) {
         dataPasser.onDataPass(data);
     }
 
     private void searchUsersByCharacter(String character) {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Query query = FirebaseDatabase.getInstance().getReference().child("Users").orderByChild("searchName")
+        Query query = FirebaseDatabase.getInstance().getReference().child("users").orderByChild("searchName")
                 .startAt(character).endAt(character + "\uf8ff");
 
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!userArrayList.isEmpty()) userArrayList.clear();
+                usersList.clear();
                 if (isAdded()) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         User user = ds.getValue(User.class);
                         assert user != null;
                         assert firebaseUser != null;
                         if (!user.getId().equals(firebaseUser.getUid())) {
-                            userArrayList.add(user);
+                            usersList.add(user);
                         }
                     }
                 }
-                userAdapter = new UserAdapter(getContext(), userArrayList);
+                userAdapter = new UserAdapter(getContext(), usersList);
                 recyclerView.setAdapter(userAdapter);
 
                 if (etSearch.getText().toString().trim().equals("")) {
-                    readUsers();
+                    usersList.clear();
                     recyclerView.setVisibility(View.VISIBLE);
                     noSearch.setVisibility(View.GONE);
-                } else if (userArrayList.isEmpty()){
+                    readUsers();
+                } else if (usersList.isEmpty()){
                     noSearch.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
                 } else {
@@ -253,31 +255,29 @@ public class UsersFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-    }  // another variant to search in Firebase
+    }
 
     private void readUsers() {
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference databaseReference = FirebaseDatabase.
-                getInstance().getReference().child("Users");
+                getInstance().getReference().child("users");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if ((etSearch.getText().toString().trim().equals("") || !isSearch) && isAdded()) {
-                    if (!userArrayList.isEmpty()) userArrayList.clear();
+                if (isAdded()) {
+                    usersList.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
 
-                        assert user != null;
-                        assert firebaseUser != null;
-                        if (!user.getId().equals(firebaseUser.getUid()) && isAdded()) {
-                            userArrayList.add(user);
+                        if (fUser != null && user != null) {
+                            if (!user.getId().equals(fUser.getUid()))
+                                usersList.add(user);
                         }
                     }
-                    userAdapter = new UserAdapter(getContext(), userArrayList);
+                    userAdapter = new UserAdapter(getContext(), usersList);
                     recyclerView.setAdapter(userAdapter);
 
-                    if (userArrayList.isEmpty()) {
+                    if (usersList.isEmpty()) {
                         noUsers.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(View.GONE);
                         fab.setEnabled(false);

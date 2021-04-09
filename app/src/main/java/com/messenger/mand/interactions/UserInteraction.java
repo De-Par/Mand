@@ -12,6 +12,8 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.messenger.mand.R;
 
+import org.jetbrains.annotations.NotNull;
+
 import static androidx.core.content.ContextCompat.getColor;
 
 public class UserInteraction {
@@ -24,7 +26,7 @@ public class UserInteraction {
         snackbar.show();
     }
 
-    public static void hideKeyboard(Activity activity) {
+    public static void hideKeyboard(@NotNull Activity activity) {
         InputMethodManager inputManager = (InputMethodManager) activity.
                 getSystemService(Context.INPUT_METHOD_SERVICE);
         View currentFocusedView = activity.getCurrentFocus();
@@ -36,7 +38,8 @@ public class UserInteraction {
         }
     }
 
-    public static boolean hasInternetConnection(Context context) {
+    @SuppressWarnings("deprecation")
+    public static boolean hasInternetConnection(@NotNull Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -45,7 +48,8 @@ public class UserInteraction {
                 activeNetwork.isConnectedOrConnecting();
     }
 
-    public static String getTrimLen(EditText et) {
+    @NotNull
+    public static String getTrimLen(@NotNull EditText et) {
         return et.getText().toString().trim();
     }
 }
