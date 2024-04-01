@@ -5,12 +5,12 @@ This application allows you to communicate between users by exchanging photos an
 
 # Demonstration of application:
 
-![image]()
-![image]()
-![image]()
-![image]()
-![image]()
-![image]()
-![image]()
-![image]()
-![image]()
+![image](https://github.com/De-Par/Mand/blob/master/example/dialog_1.jpg)
+![image](https://github.com/De-Par/Mand/blob/master/example/dialog_2.jpg)
+![image](https://github.com/De-Par/Mand/blob/master/example/dialog_3.jpg)
+![image](https://github.com/De-Par/Mand/blob/master/example/dialog_4.jpg)
+![image](https://github.com/De-Par/Mand/blob/master/example/dialog_5.jpg)
+![image](https://github.com/De-Par/Mand/blob/master/example/dialog_6.jpg)
+![image](https://github.com/De-Par/Mand/blob/master/example/dialog_7.jpg)
+![image](https://github.com/De-Par/Mand/blob/master/example/dialog_8.jpg)
+![image](https://github.com/De-Par/Mand/blob/master/example/dialog_9.jpg)
